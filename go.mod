@@ -8,7 +8,7 @@ require (
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.9.0
-	github.com/zclconf/go-cty v1.14.4
+	github.com/zclconf/go-cty v1.15.0
 )
 
 require (
