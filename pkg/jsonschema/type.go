@@ -86,6 +86,8 @@ func getObject(in []any, strict bool) (map[string]any, error) {
 	}
 	if strict {
 		node["additionalProperties"] = false
+	} else {
+		node["additionalProperties"] = true
 	}
 
 	if len(in) != 2 && len(in) != 3 {

@@ -1,5 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": true,
     "properties": {
         "a_bool": {
             "default": false,
@@ -94,6 +95,7 @@
             "type": "string"
         },
         "an_object": {
+            "additionalProperties": true,
             "default": {
                 "a": "a",
                 "b": 1,

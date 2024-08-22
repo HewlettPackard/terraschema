@@ -28,6 +28,8 @@ func CreateSchema(path string, strict bool) (map[string]any, error) {
 
 	if strict {
 		schemaOut["additionalProperties"] = false
+	} else {
+		schemaOut["additionalProperties"] = true
 	}
 
 	properties := make(map[string]any)

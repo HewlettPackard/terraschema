@@ -1,5 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": true,
     "properties": {
         "a_list_maximum_minimum_length": {
             "default": [
@@ -164,6 +165,7 @@
             "type": "string"
         },
         "an_object_maximum_minimum_items": {
+            "additionalProperties": true,
             "default": {
                 "name": "a",
                 "other_field": "b"
