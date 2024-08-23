@@ -1,8 +1,5 @@
 # TODO list
 
-- Add the command line
 - Add README including usage instructions, and a description of how the project actually works
-- Consider making a github action for this
 - Add a make rule to make a binary
-- Goreleaser?
-- Check github settings eg. branch protection
+- copyright check action?
