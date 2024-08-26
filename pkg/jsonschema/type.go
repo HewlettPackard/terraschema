@@ -84,11 +84,8 @@ func getObject(in []any, options CreateSchemaOptions) (map[string]any, error) {
 	node := map[string]any{
 		"type": "object",
 	}
-	if !options.AllowAdditionalProperties {
-		node["additionalProperties"] = false
-	} else {
-		node["additionalProperties"] = true
-	}
+
+	node["additionalProperties"] = options.AllowAdditionalProperties
 
 	if len(in) != 2 && len(in) != 3 {
 		return nil, fmt.Errorf("object type must have one or two additional elements, %v", in)
