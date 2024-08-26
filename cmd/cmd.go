@@ -21,11 +21,6 @@ var (
 	outputStdOut                 bool
 	inputPath                    string
 	outputPath                   string
-
-	inputAbsPath  string
-	outputAbsPath string
-
-	errReturned error
 )
 
 // rootCmd is the base command for terraschema
@@ -38,9 +33,9 @@ var rootCmd = &cobra.Command{
 		"them to a schema which complies with JSON Schema Draft-07.\nThe default behaviour is to scan " +
 		"the current directory and output a schema file called 'schema.json' in the same location. " +
 		"\nFor more information see https://github.com/HewlettPackard/terraschema.",
-	PreRun:  preRunCommand,
-	Run:     runCommand,
-	PostRun: postRunCommand,
+	PreRunE:      preRunCommand,
+	RunE:         runCommand,
+	SilenceUsage: true,
 }
 
 // Execute command with the following flags:
@@ -65,7 +60,8 @@ func init() {
 	)
 
 	rootCmd.Flags().BoolVar(&requireAll, "require-all", false,
-		"set all variables to be 'required' in the JSON Schema, even if a default value is specified",
+		"set all variables to be 'required' in the JSON Schema, even if a default\n"+
+			"value is specified",
 	)
 
 	rootCmd.Flags().StringVarP(&inputPath, "input", "i", ".",
@@ -81,123 +77,109 @@ func init() {
 	)
 
 	rootCmd.Flags().BoolVar(&outputStdOut, "stdout", false,
-		"output schema content to stdout instead of a file and disable any other logging unless an error occurs",
+		"output schema content to stdout instead of a file and disable any other logging\n"+
+			"unless an error occurs. Overrides 'debug' and 'output.",
 	)
+
+	rootCmd.SetFlagErrorFunc(func(cmd *cobra.Command, err error) error {
+		_ = rootCmd.Usage()
+
+		return err
+	})
 }
 
-func preRunCommand(cmd *cobra.Command, args []string) {
-	inputFileChecks()
+func preRunCommand(cmd *cobra.Command, args []string) error {
+	err := inputFileChecks()
+	if err != nil {
+		return err
+	}
 	if !outputStdOut {
-		outputFileChecks()
+		return outputFileChecks()
 	}
+
+	return nil
 }
 
-func inputFileChecks() {
-	var err error
-	inputAbsPath, err = filepath.Abs(inputPath) // absolute path
+func inputFileChecks() error {
+	_, err := filepath.Abs(inputPath) // absolute path
 	if err != nil {
-		errReturned = fmt.Errorf("could not get absolute path for %q: %w", inputPath, err)
-
-		return
+		return fmt.Errorf("could not get absolute path for %q: %w", inputPath, err)
 	}
 
-	folder, err := os.Stat(inputAbsPath)
+	folder, err := os.Stat(inputPath)
 	if err != nil {
-		errReturned = fmt.Errorf("could not access directory %q: %w", inputAbsPath, err)
-
-		return
+		return fmt.Errorf("could not access directory %q: %w", inputPath, err)
 	}
 
 	if !folder.IsDir() {
-		errReturned = fmt.Errorf("input path %q is not a directory", inputAbsPath)
-
-		return
+		return fmt.Errorf("input path %q is not a directory", inputPath)
 	}
+
+	return nil
 }
 
-func outputFileChecks() {
-	var err error
-	outputAbsPath, err = filepath.Abs(outputPath) // absolute path
+func outputFileChecks() error {
+	_, err := filepath.Abs(outputPath) // absolute path
 	if err != nil {
-		errReturned = fmt.Errorf("could not get absolute path for %q: %w", outputPath, err)
-
-		return
+		return fmt.Errorf("could not get absolute path for %q: %w", outputPath, err)
 	}
 
-	outputFile, err := os.Stat(outputAbsPath)
+	outputFile, err := os.Stat(outputPath)
 	if err == nil {
 		if overwrite {
 			if outputFile.IsDir() {
-				errReturned = fmt.Errorf(
+				return fmt.Errorf(
 					"output path %q is an existing directory, please specify a file path",
-					outputAbsPath,
+					outputPath,
 				)
 			}
 		} else {
-			errReturned = fmt.Errorf("output path %q already exists, use --overwrite to overwrite", outputAbsPath)
-
-			return
+			return fmt.Errorf("output path %q already exists, use --overwrite to overwrite", outputPath)
 		}
 	}
 
 	if !strings.HasSuffix(outputPath, ".json") {
-		fmt.Printf("Output path %q does not have a .json extension, continuing\n", outputPath)
+		fmt.Printf("Warning: output path %q does not have a .json extension, continuing\n", outputPath)
 	}
+
+	return nil
 }
 
-func runCommand(cmd *cobra.Command, args []string) {
-	if errReturned != nil {
-		// an error occurred in the PreRun function, do not continue
-		return
-	}
-
+func runCommand(cmd *cobra.Command, args []string) error {
 	// TODO: suppress other printing while outputting to stdout (probably with slog)
-	outputMap, err := jsonschema.CreateSchema(inputAbsPath, jsonschema.CreateSchemaOptions{
+	outputMap, err := jsonschema.CreateSchema(inputPath, jsonschema.CreateSchemaOptions{
 		RequireAll:                requireAll,
 		AllowAdditionalProperties: !disallowAdditionalProperties,
 		AllowEmpty:                allowEmpty,
 	})
 	if err != nil {
-		errReturned = fmt.Errorf("error creating schema: %w", err)
-
-		return
+		return fmt.Errorf("error creating schema: %w", err)
 	}
 
 	jsonOutput, err := json.MarshalIndent(outputMap, "", "\t")
 	if err != nil {
-		errReturned = fmt.Errorf("error marshalling schema: %w", err)
-
-		return
+		return fmt.Errorf("error marshalling schema: %w", err)
 	}
 
 	if outputStdOut {
 		fmt.Println(string(jsonOutput))
 
-		return
+		return nil
 	}
 
 	// create folder path for output file if it doesn't exist
-	err = os.MkdirAll(filepath.Dir(outputAbsPath), 0o755)
+	err = os.MkdirAll(filepath.Dir(outputPath), 0o755)
 	if err != nil {
-		errReturned = fmt.Errorf("error creating folder for %q: %w", outputAbsPath, err)
-
-		return
+		return fmt.Errorf("error creating folder for %q: %w", outputPath, err)
 	}
 
 	// Create a file with 644 file permissions. If this causes issues, we can use 600 instead later.
 	//nolint:gosec
-	err = os.WriteFile(outputAbsPath, jsonOutput, 0o644)
+	err = os.WriteFile(outputPath, jsonOutput, 0o644)
 	if err != nil {
-		errReturned = fmt.Errorf("error writing schema to %q: %w", outputAbsPath, err)
-
-		return
+		return fmt.Errorf("error writing schema to %q: %w", outputPath, err)
 	}
-	fmt.Printf("Schema written to %q\n", outputAbsPath)
-}
+	fmt.Printf("Schema written to %q\n", outputPath)
 
-func postRunCommand(cmd *cobra.Command, args []string) {
-	if errReturned != nil {
-		fmt.Printf("error: %v\n", errReturned)
-		os.Exit(1)
-	}
+	return nil
 }
