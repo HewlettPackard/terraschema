@@ -8,7 +8,7 @@ import (
 	ctyjson "github.com/zclconf/go-cty/cty/json"
 )
 
-// expressionToJSONObject converts an HCL expression to an interface{} that can be marshaled to JSON.
+// expressionToJSONObject converts an HCL expression to an `any` type so that can be marshaled to JSON later.
 func expressionToJSONObject(in hcl.Expression) (any, error) {
 	v, d := in.Value(&hcl.EvalContext{})
 	if d.HasErrors() {
@@ -17,8 +17,9 @@ func expressionToJSONObject(in hcl.Expression) (any, error) {
 
 	// convert the value to a simple JSON value, so that it can
 	// be reliably marshaled to JSON. Then, unmarshal it to an
-	// interface{} so that it can be passed around the code without
-	// the additional type information.
+	// `any` type so that it can be passed around the code without
+	// the additional type information that was unmarshaled by the
+	// hcl package.
 	simpleObject := ctyjson.SimpleJSONValue{Value: v}
 	simpleAsJSON, err := simpleObject.MarshalJSON()
 	if err != nil {

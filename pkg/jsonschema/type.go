@@ -12,9 +12,9 @@ var simpleTypeMap = map[string]string{
 	"bool":   "boolean",
 }
 
-func getNodeFromType(name string, typeInterface any, nullable bool, strict bool) (map[string]any, error) {
+func getNodeFromType(name string, typeInterface any, nullable bool, options CreateSchemaOptions) (map[string]any, error) {
 	if nullable {
-		return getNullableNode(name, typeInterface, strict)
+		return getNullableNode(name, typeInterface, options)
 	}
 
 	switch t := typeInterface.(type) {
@@ -27,18 +27,18 @@ func getNodeFromType(name string, typeInterface any, nullable bool, strict bool)
 			return nil, fmt.Errorf("unsupported type %q", t)
 		}
 	case []any:
-		return getNodeFromSlice(t, strict)
+		return getNodeFromSlice(t, options)
 	default:
 		return nil, fmt.Errorf("unsupported type for %#v", typeInterface)
 	}
 }
 
-func getNullableNode(name string, typeInterface any, strict bool) (map[string]any, error) {
+func getNullableNode(name string, typeInterface any, options CreateSchemaOptions) (map[string]any, error) {
 	node := make(map[string]any)
 	if typeInterface == nil {
 		return node, nil
 	}
-	internalNode, err := getNodeFromType(name, typeInterface, false, strict)
+	internalNode, err := getNodeFromType(name, typeInterface, false, options)
 	if err != nil {
 		return nil, err
 	}
@@ -58,33 +58,33 @@ func getNullableNode(name string, typeInterface any, strict bool) (map[string]an
 	return node, nil
 }
 
-func getNodeFromSlice(in []any, strict bool) (map[string]any, error) {
+func getNodeFromSlice(in []any, options CreateSchemaOptions) (map[string]any, error) {
 	switch in[0] {
 	// "object" affects additionalProperties, properties, type and required
 	case "object":
-		return getObject(in, strict)
+		return getObject(in, options)
 	// "map" affects additionalProperties and type.
 	case "map":
-		return getMap(in, strict)
+		return getMap(in, options)
 	// "list" affects items, type
 	case "list":
-		return getList(in, strict)
+		return getList(in, options)
 	// "set" affects items, type, uniqueItems
 	case "set":
-		return getSet(in, strict)
+		return getSet(in, options)
 	// "tuple" affects items, type, maxItems, minItems
 	case "tuple":
-		return getTuple(in, strict)
+		return getTuple(in, options)
 	default:
 		panic("unknown type")
 	}
 }
 
-func getObject(in []any, strict bool) (map[string]any, error) {
+func getObject(in []any, options CreateSchemaOptions) (map[string]any, error) {
 	node := map[string]any{
 		"type": "object",
 	}
-	if strict {
+	if !options.AllowAdditionalProperties {
 		node["additionalProperties"] = false
 	} else {
 		node["additionalProperties"] = true
@@ -123,12 +123,13 @@ func getObject(in []any, strict bool) (map[string]any, error) {
 	properties := make(map[string]any)
 
 	for key, val := range inMap {
-		newNode, err := getNodeFromType("", val, false, strict)
+		newNode, err := getNodeFromType("", val, false, options)
 		if err != nil {
 			return nil, fmt.Errorf("object property %q: %w", key, err)
 		}
 		properties[key] = newNode
-		if !optionals[key] {
+		// if the variable of the sub-object is marked as optional but RequireAll is true, then it is required.
+		if !optionals[key] || options.RequireAll {
 			required = append(required, key)
 		}
 	}
@@ -141,14 +142,14 @@ func getObject(in []any, strict bool) (map[string]any, error) {
 	return node, nil
 }
 
-func getMap(in []any, strict bool) (map[string]any, error) {
+func getMap(in []any, options CreateSchemaOptions) (map[string]any, error) {
 	node := map[string]any{
 		"type": "object",
 	}
 	if len(in) != 2 {
 		return nil, fmt.Errorf("map type must have exactly one additional element, %v", in)
 	}
-	newNode, err := getNodeFromType("", in[1], false, strict)
+	newNode, err := getNodeFromType("", in[1], false, options)
 	if err != nil {
 		return nil, fmt.Errorf("map: %w", err)
 	}
@@ -157,7 +158,7 @@ func getMap(in []any, strict bool) (map[string]any, error) {
 	return node, nil
 }
 
-func getList(in []any, strict bool) (map[string]any, error) {
+func getList(in []any, options CreateSchemaOptions) (map[string]any, error) {
 	node := map[string]any{
 		"type": "array",
 	}
@@ -165,7 +166,7 @@ func getList(in []any, strict bool) (map[string]any, error) {
 		return nil, fmt.Errorf("list type must have exactly one additional element, %v", in)
 	}
 
-	newNode, err := getNodeFromType("", in[1], false, strict)
+	newNode, err := getNodeFromType("", in[1], false, options)
 	if err != nil {
 		return nil, fmt.Errorf("list: %w", err)
 	}
@@ -174,7 +175,7 @@ func getList(in []any, strict bool) (map[string]any, error) {
 	return node, nil
 }
 
-func getSet(in []any, strict bool) (map[string]any, error) {
+func getSet(in []any, options CreateSchemaOptions) (map[string]any, error) {
 	node := map[string]any{
 		"type":        "array",
 		"uniqueItems": true,
@@ -183,7 +184,7 @@ func getSet(in []any, strict bool) (map[string]any, error) {
 		return nil, fmt.Errorf("set type must have exactly one additional element, %v", in)
 	}
 
-	newNode, err := getNodeFromType("", in[1], false, strict)
+	newNode, err := getNodeFromType("", in[1], false, options)
 	if err != nil {
 		return nil, fmt.Errorf("set: %w", err)
 	}
@@ -192,7 +193,7 @@ func getSet(in []any, strict bool) (map[string]any, error) {
 	return node, nil
 }
 
-func getTuple(in []any, strict bool) (map[string]any, error) {
+func getTuple(in []any, options CreateSchemaOptions) (map[string]any, error) {
 	node := map[string]any{
 		"type": "array",
 	}
@@ -207,7 +208,7 @@ func getTuple(in []any, strict bool) (map[string]any, error) {
 	}
 
 	for _, val := range typeSlice {
-		newNode, err := getNodeFromType("", val, false, strict)
+		newNode, err := getNodeFromType("", val, false, options)
 		if err != nil {
 			return nil, fmt.Errorf("tuple: %w", err)
 		}

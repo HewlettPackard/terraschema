@@ -32,10 +32,14 @@ func TestCreateSchema(t *testing.T) {
 			expected, err := os.ReadFile(filepath.Join(schemaPath, name, "schema.json"))
 			require.NoError(t, err)
 
-			result, err := CreateSchema(filepath.Join(tfPath, name), false)
+			result, err := CreateSchema(filepath.Join(tfPath, name), CreateSchemaOptions{
+				RequireAll:                false,
+				AllowAdditionalProperties: true,
+				AllowEmpty:                true,
+			})
 			require.NoError(t, err)
 
-			var expectedMap map[string]interface{}
+			var expectedMap map[string]any
 			err = json.Unmarshal(expected, &expectedMap)
 			require.NoError(t, err)
 
@@ -283,7 +287,7 @@ func TestSampleInput(t *testing.T) {
 
 			input, err := os.ReadFile(tc.filePath)
 			require.NoError(t, err)
-			var m interface{}
+			var m any
 			err = json.Unmarshal(input, &m)
 			require.NoError(t, err)
 

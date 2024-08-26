@@ -18,7 +18,6 @@ jobs:
       - name: GolangCI Lint
         uses: golangci/golangci-lint-action@v6
         with:
-          # TODO: Update this version.
           version: v1.60.2
           args: --out-format=colored-line-number
   test:

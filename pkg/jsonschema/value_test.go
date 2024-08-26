@@ -58,11 +58,11 @@ func TestExpressionToJSONObject_Default(t *testing.T) {
 			for key, val := range defaults {
 				expectedVal, ok := expectedMap[key]
 				if !ok {
-					t.Errorf("Variable %s not found in expected map", key)
+					t.Errorf("Variable %q not found in expected map", key)
 				}
 
 				if d := cmp.Diff(expectedVal, val); d != "" {
-					t.Errorf("Variable %s has incorrect default (-want,+got):\n%s", key, d)
+					t.Errorf("Variable %q has incorrect default (-want,+got):\n%s", key, d)
 				}
 			}
 		})

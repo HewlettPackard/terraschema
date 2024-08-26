@@ -166,7 +166,7 @@ func performOp(op *hclsyntax.Operation, node *map[string]any, num float64, nodeT
 	}
 	info, ok := fieldMap[operationWithTypeName{op, nodeType}]
 	if !ok {
-		return fmt.Errorf("operation not supported for type %s op %v", nodeType, op)
+		return fmt.Errorf("operation not supported for type %q op %v", nodeType, op)
 	}
 	if info.minField != "" {
 		if info.exclusive {

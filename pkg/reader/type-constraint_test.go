@@ -35,7 +35,7 @@ func TestGetTypeConstraint(t *testing.T) {
 				t.Errorf("error reading tf files: %v", err)
 			}
 
-			var expectedMap map[string]interface{}
+			var expectedMap map[string]any
 			err = json.Unmarshal(expected, &expectedMap)
 			require.NoError(t, err)
 
@@ -44,14 +44,14 @@ func TestGetTypeConstraint(t *testing.T) {
 			for key, val := range varMap {
 				expectedVal, ok := expectedMap[key]
 				if !ok {
-					t.Errorf("Variable %s not found in expected map", key)
+					t.Errorf("Variable %q not found in expected map", key)
 				}
 
 				constraint, err := GetTypeConstraint(val.Variable.Type)
 				require.NoError(t, err)
 
 				if d := cmp.Diff(expectedVal, constraint); d != "" {
-					t.Errorf("Variable %s has incorrect type constraint (-want,+got):\n%s", key, d)
+					t.Errorf("Variable %q has incorrect type constraint (-want,+got):\n%s", key, d)
 				}
 			}
 		})

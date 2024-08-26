@@ -23,6 +23,11 @@ var fileSchema = &hcl.BodySchema{
 
 var ErrFilesNotFound = fmt.Errorf("no .tf files found in directory")
 
+// GetVarMap reads all .tf files in a directory and returns a map of variable names to their translated values.
+// For the purpose of this application, all that matters is the model.VariableBlock contained in this, which
+// contains a direct unmarshal of the block itself using the hcl package. The rest of the information is for
+// debugging purposes, and to simplify the process of deciding if a variable is 'required' later. Note: in 'strict'
+// mode, all variables are required, regardless of whether they have a default value or not.
 func GetVarMap(path string) (map[string]model.TranslatedVariable, error) {
 	// read all tf files in directory
 	files, err := filepath.Glob(filepath.Join(path, "*.tf"))
@@ -49,7 +54,7 @@ func GetVarMap(path string) (map[string]model.TranslatedVariable, error) {
 		for _, block := range blocks.Blocks {
 			name, translated, err := getTranslatedVariableFromBlock(block, file)
 			if err != nil {
-				return nil, fmt.Errorf("error getting parsing %s: %w", name, err)
+				return nil, fmt.Errorf("error getting parsing %q: %w", name, err)
 			}
 			varMap[name] = translated
 		}
