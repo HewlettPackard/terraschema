@@ -77,7 +77,7 @@ running Terraform.
 ### Parsing Terraform Configuration Files
 Parsing Terraform files is done using the [HCL package](https://github.com/hashicorp/hcl). Initially, the plan was to use an existing application such as [terraform-docs](https://github.com/terraform-docs/terraform-docs/) to preform the parsing step, but some of the fields of the `variable` block weren't implemented, such as validation rules.
 
-TerraSchema parses each terraform configuration file as a HCL (HashiCorp Configuration Language) file and picks out any blocks which match the definition of an input variable in Terraform. A typical `variable` block looks like this:
+TerraSchema parses each Terraform configuration file as a HCL (HashiCorp Configuration Language) file and picks out any blocks which match the definition of an input variable in Terraform. A typical `variable` block looks like this:
 
 ```hcl
 variable "age" {

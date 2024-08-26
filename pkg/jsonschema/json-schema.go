@@ -23,7 +23,7 @@ func CreateSchema(path string, options CreateSchemaOptions) (map[string]any, err
 	if err != nil {
 		if errors.Is(err, reader.ErrFilesNotFound) {
 			if options.AllowEmpty {
-				fmt.Printf("No tf files were found in %q, creating empty schema\n", path)
+				fmt.Printf("Info: no tf files were found in %q, creating empty schema\n", path)
 
 				return schemaOut, nil
 			}
@@ -42,11 +42,7 @@ func CreateSchema(path string, options CreateSchemaOptions) (map[string]any, err
 
 	schemaOut["$schema"] = "http://json-schema.org/draft-07/schema#"
 
-	if !options.AllowAdditionalProperties {
-		schemaOut["additionalProperties"] = false
-	} else {
-		schemaOut["additionalProperties"] = true
-	}
+	schemaOut["additionalProperties"] = options.AllowAdditionalProperties
 
 	properties := make(map[string]any)
 	requiredArray := []any{}

@@ -32,7 +32,7 @@ func TestGetTypeConstraint(t *testing.T) {
 
 			varMap, err := GetVarMap(filepath.Join(tfPath, name))
 			if err != nil && !errors.Is(err, ErrFilesNotFound) {
-				t.Errorf("error reading tf files: %v", err)
+				t.Errorf("Error reading tf files: %v", err)
 			}
 
 			var expectedMap map[string]any

@@ -37,8 +37,12 @@ var rootCmd = &cobra.Command{
 	Use:     "terraschema",
 	Example: "terraschema -i /path/to/module -o /path/to/schema.json",
 	Short:   "Generate JSON schema from HCL Variable Blocks in a Terraform/OpenTofu module",
-	Long:    `TODO: Long description`,
-	Run:     runCommand,
+	Long: "TerraSchema is a CLI tool which scans Terraform configuration ('.tf') " +
+		"files, parses a list of variables along with their type and validation rules, and converts " +
+		"them to a schema which complies with JSON Schema Draft-07.\nThe default behaviour is to scan " +
+		"the current directory and output a schema file called 'schema.json' in the same location. " +
+		"\nFor more information see https://github.com/HewlettPackard/terraschema.",
+	Run: runCommand,
 	PostRun: func(cmd *cobra.Command, args []string) {
 		if errReturned != nil {
 			fmt.Printf("error: %v\n", errReturned)
@@ -53,31 +57,31 @@ func Execute() error {
 
 func init() {
 	// TODO: implement
-	rootCmd.Flags().BoolVar(&overwrite, "overwrite", false, "overwrite existing schema file")
+	rootCmd.Flags().BoolVar(&overwrite, "overwrite", false, "allow overwriting an existing file")
 	// TODO: implement
 	rootCmd.Flags().BoolVar(&outputStdOut, "stdout", false,
-		"output schema content to stdout instead of a file and disable error output",
+		"output JSON Schema content to stdout instead of a file and disable error output",
 	)
 
 	rootCmd.Flags().BoolVar(&disallowAdditionalProperties, "disallow-additional-properties", false,
-		"set additionalProperties to false in the generated schema and in nested objects",
+		"set additionalProperties to false in the JSON Schema and in nested objects",
 	)
 
 	rootCmd.Flags().BoolVar(&allowEmpty, "allow-empty", false,
-		"allow empty schema if no variables are found, otherwise error",
+		"allow an empty JSON Schema if no variables are found",
 	)
 
 	rootCmd.Flags().BoolVar(&requireAll, "require-all", false,
-		"require all variables to be present in the schema, even if a default value is specified",
+		"set all variables to be 'required' in the JSON Schema, even if a default value is specified",
 	)
 
 	rootCmd.Flags().StringVarP(&input, "input", "i", ".",
-		"input folder containing .tf files",
+		"input folder containing a Terraform module",
 	)
 
 	// TODO: implement
 	rootCmd.Flags().StringVarP(&output, "output", "o", "schema.json",
-		"output file path for schema",
+		"output path for the JSON Schema file",
 	)
 }
 
@@ -91,7 +95,7 @@ func runCommand(cmd *cobra.Command, args []string) {
 
 	folder, err := os.Stat(path)
 	if err != nil {
-		errReturned = fmt.Errorf("could not open %q: %w", path, err)
+		errReturned = fmt.Errorf("could not access directory %q: %w", path, err)
 
 		return
 	}
