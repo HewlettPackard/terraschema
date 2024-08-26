@@ -13,14 +13,6 @@ import (
 	"github.com/HewlettPackard/terraschema/pkg/jsonschema"
 )
 
-// wanted behaviour:
-// - disallow-additional-properties: disallow additional properties in schema (default is false)
-// - overwrite: overwrite an existing file (default is false for safety reasons)
-// - stdout: suppress errors and output schema to stdout (generally not recommended)
-// - output: file, default is ./schema.json. Allow creation of directories.
-// - input: folder, default is .
-// - allow-empty: if no variables are found, print empty schema and exit with 0
-
 var (
 	disallowAdditionalProperties bool
 	overwrite                    bool
@@ -51,6 +43,14 @@ var rootCmd = &cobra.Command{
 	PostRun: postRunCommand,
 }
 
+// Execute command with the following flags:
+//   - disallow-additional-properties: disallow additional properties in schema (default is false)
+//   - overwrite: overwrite an existing file (default is false for safety reasons)
+//   - stdout: suppress errors and output schema to stdout (generally not recommended)
+//   - output: file, default is ./schema.json. Allow creation of directories.
+//   - input: folder, default is .
+//   - allow-empty: if no variables are found, print empty schema and exit with 0
+//   - require-all: require all variables to be present in the schema, even if a default value is specified
 func Execute() error {
 	return rootCmd.Execute()
 }
