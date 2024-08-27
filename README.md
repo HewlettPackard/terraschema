@@ -74,6 +74,10 @@ running Terraform.
 - `--stdout`: Print schema to stdout and prevent all other logging unless an error occurs. Does not create a file.
   Overrides `--debug` and `--output`.
 
+- `--export-variables`: Export the variables in JSON format directly and do not create a JSON Schema. This provides similar functionality to applications such as terraform-docs, where the input variables can be output to a machine-readable format such as JSON. The `type` field is converted to a type constraint based on the type definition, and the `default` field is translated to its literal value. `condition` inside the `validation` block is left as a string, because it is difficult to represent arbitrary (ie unevaluated) hcl Expressions in JSON.
+
+- `--escape-json`: Escape special characters in the JSON (`<`,`>` and `&`) so that the schema can be used in a web context. By default, this behaviour is disabled so the JSON file can be read more easily, though it does not effect external programs such as `jq`.
+
 # Design
 
 ### Parsing Terraform Configuration Files
@@ -134,7 +138,24 @@ Here is an example schema generate from a module with only the variable listed a
     },
     "required": [] // only variables without a default are required, unless `--require-all` is set
 }
+```
 
+Alternatively, if the program is run with the `--export-variables` flag, the returned JSON will be in the form:
+
+```JSON
+{
+    "age": {
+        "description": "Your age",
+        "default": 10,
+        "sensitive": false,
+        "nullable": false,
+        "validation": {
+            "condition": "var.age >= 0",
+            "error_message": "Age must not be negative"
+        },
+        "type": "number"
+    }
+}
 ```
 
 ### Translating Types to JSON Schema

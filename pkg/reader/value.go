@@ -1,5 +1,5 @@
 // (C) Copyright 2024 Hewlett Packard Enterprise Development LP
-package jsonschema
+package reader
 
 import (
 	"encoding/json"
@@ -8,8 +8,12 @@ import (
 	ctyjson "github.com/zclconf/go-cty/cty/json"
 )
 
-// expressionToJSONObject converts an HCL expression to an `any` type so that can be marshaled to JSON later.
-func expressionToJSONObject(in hcl.Expression) (any, error) {
+// ExpressionToJSONObject converts an HCL expression to an `any` type so that can be marshaled to JSON later.
+func ExpressionToJSONObject(in hcl.Expression) (any, error) {
+	if in == nil {
+		return nil, nil //nolint:nilnil
+	}
+
 	v, d := in.Value(&hcl.EvalContext{})
 	if d.HasErrors() {
 		return nil, d

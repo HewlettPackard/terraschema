@@ -83,7 +83,7 @@ func createNode(name string, v model.TranslatedVariable, options CreateSchemaOpt
 	}
 
 	if v.Variable.Default != nil {
-		def, err := expressionToJSONObject(v.Variable.Default)
+		def, err := reader.ExpressionToJSONObject(v.Variable.Default)
 		if err != nil {
 			return nil, fmt.Errorf("error converting default value to JSON object: %w", err)
 		}

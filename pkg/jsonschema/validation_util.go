@@ -7,6 +7,8 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/zclconf/go-cty/cty/gocty"
+
+	"github.com/HewlettPackard/terraschema/pkg/reader"
 )
 
 func isExpressionVarName(ex hcl.Expression, name string) bool {
@@ -262,7 +264,7 @@ func parseEqualityExpression(ex *hclsyntax.BinaryOpExpr, name string, enum *[]an
 	}
 
 	if isExpressionVarName(ex.LHS, name) {
-		object, err := expressionToJSONObject(ex.RHS)
+		object, err := reader.ExpressionToJSONObject(ex.RHS)
 		if err != nil {
 			return fmt.Errorf("value could not be converted to JSON: %w", err)
 		}

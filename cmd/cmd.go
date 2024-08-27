@@ -2,6 +2,7 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	tsjson "github.com/HewlettPackard/terraschema/pkg/json"
 	"github.com/HewlettPackard/terraschema/pkg/jsonschema"
 )
 
@@ -23,6 +25,8 @@ var (
 	inputPath                    string
 	outputPath                   string
 	debugOut                     bool
+	exportVariables              bool
+	escapeJSON                   bool
 )
 
 // rootCmd is the base command for terraschema
@@ -93,6 +97,15 @@ func init() {
 		"make all variables nullable unless nullable set to false explicitly, to make behavior consistent with Terraform",
 	)
 
+	rootCmd.Flags().BoolVar(&exportVariables, "export-variables", false,
+		"export variables to a JSON file or stdout instead of creating a schema",
+	)
+
+	rootCmd.Flags().BoolVar(&escapeJSON, "escape-json", false,
+		"escape JSON special characters in the output, so that the Schema can be used in a\n"+
+			"web context",
+	)
+
 	rootCmd.SetFlagErrorFunc(func(cmd *cobra.Command, err error) error {
 		_ = rootCmd.Usage()
 
@@ -158,23 +171,46 @@ func outputFileChecks() error {
 }
 
 func runCommand(cmd *cobra.Command, args []string) error {
-	// TODO: suppress other printing while outputting to stdout (probably with slog)
-	outputMap, err := jsonschema.CreateSchema(inputPath, jsonschema.CreateSchemaOptions{
-		RequireAll:                requireAll,
-		AllowAdditionalProperties: !disallowAdditionalProperties,
-		AllowEmpty:                allowEmpty,
-		DebugOut:                  debugOut && !outputStdOut,
-		SuppressLogging:           outputStdOut,
-		NullableAll:               nullableAll,
-	})
-	if err != nil {
-		return fmt.Errorf("error creating schema: %w", err)
+	var outputMap any
+	var err error
+
+	jsonIndent := "\t"
+
+	if exportVariables {
+		outputMap, err = tsjson.ExportVariables(inputPath, tsjson.ExportVariablesOptions{
+			AllowEmpty:      allowEmpty,
+			SuppressLogging: outputStdOut,
+			DebugOut:        debugOut && !outputStdOut,
+			EscapeJSON:      escapeJSON,
+			Indent:          jsonIndent,
+		})
+		if err != nil {
+			return fmt.Errorf("error exporting variables: %w", err)
+		}
+	} else {
+		outputMap, err = jsonschema.CreateSchema(inputPath, jsonschema.CreateSchemaOptions{
+			RequireAll:                requireAll,
+			AllowAdditionalProperties: !disallowAdditionalProperties,
+			AllowEmpty:                allowEmpty,
+			DebugOut:                  debugOut && !outputStdOut,
+			SuppressLogging:           outputStdOut,
+			NullableAll:               nullableAll,
+		})
+		if err != nil {
+			return fmt.Errorf("error creating schema: %w", err)
+		}
 	}
 
-	jsonOutput, err := json.MarshalIndent(outputMap, "", "\t")
+	buffer := &bytes.Buffer{}
+	encoder := json.NewEncoder(buffer)
+	encoder.SetEscapeHTML(escapeJSON)
+	encoder.SetIndent("", jsonIndent)
+
+	err = encoder.Encode(outputMap)
 	if err != nil {
 		return fmt.Errorf("error marshalling schema: %w", err)
 	}
+	jsonOutput := buffer.Bytes()
 
 	if outputStdOut {
 		fmt.Println(string(jsonOutput))
@@ -194,7 +230,7 @@ func runCommand(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("error writing schema to %q: %w", outputPath, err)
 	}
-	fmt.Printf("Info: Schema written to %q\n", outputPath)
+	fmt.Printf("Info: schema written to %q\n", outputPath)
 
 	return nil
 }

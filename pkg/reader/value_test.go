@@ -1,5 +1,5 @@
 // (C) Copyright 2024 Hewlett Packard Enterprise Development LP
-package jsonschema
+package reader
 
 import (
 	"encoding/json"
@@ -10,8 +10,6 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/require"
-
-	"github.com/HewlettPackard/terraschema/pkg/reader"
 )
 
 func TestExpressionToJSONObject_Default(t *testing.T) {
@@ -37,8 +35,8 @@ func TestExpressionToJSONObject_Default(t *testing.T) {
 
 			defaults := make(map[string]any)
 
-			varMap, err := reader.GetVarMap(filepath.Join(tfPath, name), true)
-			if err != nil && !errors.Is(err, reader.ErrFilesNotFound) {
+			varMap, err := GetVarMap(filepath.Join(tfPath, name), true)
+			if err != nil && !errors.Is(err, ErrFilesNotFound) {
 				t.Errorf("error reading tf files: %v", err)
 			}
 
@@ -47,7 +45,7 @@ func TestExpressionToJSONObject_Default(t *testing.T) {
 					continue
 				}
 
-				defaults[key], err = expressionToJSONObject(val.Variable.Default)
+				defaults[key], err = ExpressionToJSONObject(val.Variable.Default)
 				require.NoError(t, err)
 			}
 

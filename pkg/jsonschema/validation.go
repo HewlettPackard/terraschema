@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/hcl/v2"
+
+	"github.com/HewlettPackard/terraschema/pkg/reader"
 )
 
 type conditionMutator func(hcl.Expression, string, string) (map[string]any, error)
@@ -79,7 +81,7 @@ func contains(ex hcl.Expression, name string, _ string) (map[string]any, error) 
 
 	newEnum := []any{}
 	for _, val := range l {
-		simple, err := expressionToJSONObject(val)
+		simple, err := reader.ExpressionToJSONObject(val)
 		if err != nil {
 			return nil, fmt.Errorf("value in list could not be converted to JSON")
 		}
@@ -127,7 +129,7 @@ func canRegex(ex hcl.Expression, name string, t string) (map[string]any, error) 
 		return nil, fmt.Errorf("second argument is not a direct reference to the input variable")
 	}
 
-	patternJSON, err := expressionToJSONObject(regexArgs[0])
+	patternJSON, err := reader.ExpressionToJSONObject(regexArgs[0])
 	if err != nil {
 		return nil, fmt.Errorf("pattern could not be converted to JSON: %w", err)
 	}
