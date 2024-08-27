@@ -30,7 +30,7 @@ func TestGetTypeConstraint(t *testing.T) {
 			expected, err := os.ReadFile(filepath.Join(expectedPath, name, "type-constraints.json"))
 			require.NoError(t, err)
 
-			varMap, err := GetVarMap(filepath.Join(tfPath, name))
+			varMap, err := GetVarMap(filepath.Join(tfPath, name), true)
 			if err != nil && !errors.Is(err, ErrFilesNotFound) {
 				t.Errorf("Error reading tf files: %v", err)
 			}

@@ -96,9 +96,11 @@ func parseComparisonExpression(ex *hclsyntax.BinaryOpExpr, name string, node *ma
 			return fmt.Errorf("could not flip sign")
 		}
 	}
-	val, d := ex.RHS.Value(nil)
+	// parse the right hand side as a constant numeric value. Can't reference other variables since that would require
+	// making a more complex JSON schema (eg with "if" and "then" properties).
+	val, d := ex.RHS.Value(&hcl.EvalContext{})
 	if d.HasErrors() {
-		return fmt.Errorf("could not evaluate expression: %w", d)
+		return fmt.Errorf("could not evaluate expression as a constant value: %w", d)
 	}
 	var num float64
 	err := gocty.FromCtyValue(val, &num)
@@ -119,7 +121,7 @@ func parseComparisonExpression(ex *hclsyntax.BinaryOpExpr, name string, node *ma
 	if condition1 || condition2 {
 		return performOp(ex.Op, node, num, nodeType)
 	} else {
-		return fmt.Errorf("variable name not found")
+		return fmt.Errorf("operation not supported for type %q op %v", nodeType, ex.Op)
 	}
 }
 
@@ -270,5 +272,5 @@ func parseEqualityExpression(ex *hclsyntax.BinaryOpExpr, name string, enum *[]an
 		return nil
 	}
 
-	return fmt.Errorf("variable name not found")
+	return fmt.Errorf("variable name not found in expression")
 }

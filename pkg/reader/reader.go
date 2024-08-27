@@ -21,14 +21,17 @@ var fileSchema = &hcl.BodySchema{
 	},
 }
 
-var ErrFilesNotFound = fmt.Errorf("no .tf files found in directory")
+var (
+	ErrFilesNotFound    = fmt.Errorf("no .tf files found")
+	ErrNoVariablesFound = fmt.Errorf("tf files don't contain any variables")
+)
 
 // GetVarMap reads all .tf files in a directory and returns a map of variable names to their translated values.
 // For the purpose of this application, all that matters is the model.VariableBlock contained in this, which
 // contains a direct unmarshal of the block itself using the hcl package. The rest of the information is for
 // debugging purposes, and to simplify the process of deciding if a variable is 'required' later. Note: in 'strict'
 // mode, all variables are required, regardless of whether they have a default value or not.
-func GetVarMap(path string) (map[string]model.TranslatedVariable, error) {
+func GetVarMap(path string, debugOut bool) (map[string]model.TranslatedVariable, error) {
 	// read all tf files in directory
 	files, err := filepath.Glob(filepath.Join(path, "*.tf"))
 	if err != nil {
@@ -38,10 +41,18 @@ func GetVarMap(path string) (map[string]model.TranslatedVariable, error) {
 		return nil, ErrFilesNotFound
 	}
 
+	if debugOut {
+		fmt.Printf("Debug: found the following files in %q:\n", path)
+	}
+
 	parser := hclparse.NewParser()
 
 	varMap := make(map[string]model.TranslatedVariable)
 	for _, fileName := range files {
+		if debugOut {
+			fmt.Printf("\t%q, with variable(s):\n", fileName)
+		}
+
 		file, d := parser.ParseHCLFile(fileName)
 		if d.HasErrors() {
 			return nil, d
@@ -57,7 +68,15 @@ func GetVarMap(path string) (map[string]model.TranslatedVariable, error) {
 				return nil, fmt.Errorf("error getting parsing %q: %w", name, err)
 			}
 			varMap[name] = translated
+
+			if debugOut {
+				fmt.Printf("\t\t%s\n", name)
+			}
 		}
+	}
+
+	if len(varMap) == 0 {
+		return nil, ErrNoVariablesFound
 	}
 
 	return varMap, nil

@@ -37,7 +37,7 @@ func TestExpressionToJSONObject_Default(t *testing.T) {
 
 			defaults := make(map[string]any)
 
-			varMap, err := reader.GetVarMap(filepath.Join(tfPath, name))
+			varMap, err := reader.GetVarMap(filepath.Join(tfPath, name), true)
 			if err != nil && !errors.Is(err, reader.ErrFilesNotFound) {
 				t.Errorf("error reading tf files: %v", err)
 			}

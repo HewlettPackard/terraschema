@@ -9,7 +9,12 @@ import (
 
 type conditionMutator func(hcl.Expression, string, string) (map[string]any, error)
 
-var ErrConditionNotApplied = fmt.Errorf("condition could not be applied")
+var ErrConditionNotApplied = fmt.Errorf("no translation rules are supported for this condition")
+
+type ValidationApplyError struct {
+	error
+	ErrorMap map[string]error
+}
 
 func parseConditionToNode(ex hcl.Expression, _ string, name string, m *map[string]any) error {
 	if m == nil {
@@ -20,12 +25,14 @@ func parseConditionToNode(ex hcl.Expression, _ string, name string, m *map[strin
 		return fmt.Errorf("cannot apply validation, type is not defined for %#v", *m)
 	}
 	functions := map[string]conditionMutator{
-		"contains([...],var.input_parameter)":             contains,
-		"var == \"a\" || var == \"b\"":                    isOneOf,
-		"a <= (variable or variable length) < b (&& ...)": comparison,
-		"can(regex(\"...\",var.input_parameter))":         canRegex,
+		"contains([...],var.input_parameter)":          contains,
+		"var == \"a\" || var == \"b\"":                 isOneOf,
+		"a <>= (variable or variable length) (&& ...)": comparison,
+		"can(regex(\"...\",var.input_parameter))":      canRegex,
 	}
-	for _, fn := range functions {
+
+	errorMap := make(map[string]error)
+	for fnName, fn := range functions {
 		updatedNode, err := fn(ex, name, t)
 		if err == nil {
 			// apply updated node to m:
@@ -35,9 +42,10 @@ func parseConditionToNode(ex hcl.Expression, _ string, name string, m *map[strin
 
 			return nil
 		}
+		errorMap[fnName] = err
 	}
 
-	return ErrConditionNotApplied
+	return ValidationApplyError{ErrConditionNotApplied, errorMap}
 }
 
 func isOneOf(ex hcl.Expression, name string, _ string) (map[string]any, error) {
@@ -57,7 +65,7 @@ func isOneOf(ex hcl.Expression, name string, _ string) (map[string]any, error) {
 func contains(ex hcl.Expression, name string, _ string) (map[string]any, error) {
 	args, ok := argumentsOfCall(ex, "contains", 2)
 	if !ok {
-		return nil, fmt.Errorf("condition is not a contains function")
+		return nil, fmt.Errorf("condition is not a 'contains()' function")
 	}
 
 	l, d := hcl.ExprList(args[0])
@@ -89,7 +97,7 @@ func comparison(ex hcl.Expression, name string, t string) (map[string]any, error
 		"string": true,
 	}
 	if !allowedTypes[t] {
-		return nil, fmt.Errorf("rule can only be applied to object, array, number or string types")
+		return nil, fmt.Errorf("rule can only be applied to object, array, number or string types, not %q", t)
 	}
 
 	node := map[string]any{"type": t}
@@ -103,17 +111,17 @@ func comparison(ex hcl.Expression, name string, t string) (map[string]any, error
 
 func canRegex(ex hcl.Expression, name string, t string) (map[string]any, error) {
 	if t != "string" {
-		return nil, fmt.Errorf("rule can only be applied to string types")
+		return nil, fmt.Errorf("rule can only be applied to string types, not %q", t)
 	}
 
 	canArgs, ok := argumentsOfCall(ex, "can", 1)
 	if !ok {
-		return nil, fmt.Errorf("condition is not a can function")
+		return nil, fmt.Errorf("condition is not a 'can()' function")
 	}
 
 	regexArgs, ok := argumentsOfCall(canArgs[0], "regex", 2)
 	if !ok {
-		return nil, fmt.Errorf("condition is not a can(regex) function")
+		return nil, fmt.Errorf("condition is not a 'can(regex())' function")
 	}
 	if !isExpressionVarName(regexArgs[1], name) {
 		return nil, fmt.Errorf("second argument is not a direct reference to the input variable")

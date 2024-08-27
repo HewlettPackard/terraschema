@@ -14,29 +14,23 @@ type CreateSchemaOptions struct {
 	RequireAll                bool
 	AllowAdditionalProperties bool
 	AllowEmpty                bool
+	DebugOut                  bool
+	SuppressLogging           bool
 }
 
 func CreateSchema(path string, options CreateSchemaOptions) (map[string]any, error) {
 	schemaOut := make(map[string]any)
 
-	varMap, err := reader.GetVarMap(path)
+	varMap, err := reader.GetVarMap(path, options.DebugOut)
 	if err != nil {
-		if errors.Is(err, reader.ErrFilesNotFound) {
-			if options.AllowEmpty {
-				fmt.Printf("Info: no tf files were found in %q, creating empty schema\n", path)
-
-				return schemaOut, nil
+		if options.AllowEmpty && (errors.Is(err, reader.ErrFilesNotFound) || errors.Is(err, reader.ErrNoVariablesFound)) {
+			if !options.SuppressLogging {
+				fmt.Printf("Warning: directory %q: %v, creating empty schema file\n", path, err)
 			}
-		} else {
-			return schemaOut, fmt.Errorf("error reading tf files at %q: %w", path, err)
-		}
-	}
 
-	if len(varMap) == 0 {
-		if options.AllowEmpty {
 			return schemaOut, nil
 		} else {
-			return schemaOut, errors.New("no variables found in tf files")
+			return schemaOut, fmt.Errorf("error reading tf files at %q: %w", path, err)
 		}
 	}
 
@@ -92,8 +86,21 @@ func createNode(name string, v model.TranslatedVariable, options CreateSchemaOpt
 	if v.Variable.Validation != nil && v.ConditionAsString != nil {
 		err = parseConditionToNode(v.Variable.Validation.Condition, *v.ConditionAsString, name, &node)
 		// if an error occurs, log it and continue.
-		if err != nil {
-			fmt.Printf("couldn't apply validation for %q with condition %q. Error: %v\n", name, *v.ConditionAsString, err)
+		if err != nil && !options.SuppressLogging {
+			fmt.Printf("Warning: couldn't apply validation for %q with condition %q: %v\n",
+				name,
+				*v.ConditionAsString,
+				err,
+			)
+			// if the debug flag is set, print all the errors returned by each of the rules as they try to apply to the condition.
+			var validationError ValidationApplyError
+			if ok := errors.As(err, &validationError); ok && options.DebugOut {
+				fmt.Printf("Debug: condition located at %q\n", v.Variable.Validation.Condition.Range().String())
+				fmt.Println("Debug: the following errors occurred:")
+				for k, v := range validationError.ErrorMap {
+					fmt.Printf("\t%s: %v\n", k, v)
+				}
+			}
 		}
 	}
 

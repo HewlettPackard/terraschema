@@ -21,7 +21,7 @@ func TestGetVarMap_Required(t *testing.T) {
 		name := testCases[i]
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			varMap, err := GetVarMap(filepath.Join(tfPath, name))
+			varMap, err := GetVarMap(filepath.Join(tfPath, name), true)
 			if err != nil && !errors.Is(err, ErrFilesNotFound) {
 				t.Errorf("Error reading tf files: %v", err)
 			}

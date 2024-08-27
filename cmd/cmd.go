@@ -21,6 +21,7 @@ var (
 	outputStdOut                 bool
 	inputPath                    string
 	outputPath                   string
+	debugOut                     bool
 )
 
 // rootCmd is the base command for terraschema
@@ -46,6 +47,7 @@ var rootCmd = &cobra.Command{
 //   - input: folder, default is .
 //   - allow-empty: if no variables are found, print empty schema and exit with 0
 //   - require-all: require all variables to be present in the schema, even if a default value is specified
+//   - debug: output logs to track variables retrieved from each file, and get more verbose logs from custom validation rules
 func Execute() error {
 	return rootCmd.Execute()
 }
@@ -73,12 +75,17 @@ func init() {
 	)
 
 	rootCmd.Flags().BoolVar(&overwrite, "overwrite", false,
-		"overwrite an existing schema file",
+		"allow overwriting an existing file",
 	)
 
 	rootCmd.Flags().BoolVar(&outputStdOut, "stdout", false,
-		"output schema content to stdout instead of a file and disable any other logging\n"+
+		"output JSON Schema content to stdout instead of a file and disable any other logging\n"+
 			"unless an error occurs. Overrides 'debug' and 'output.",
+	)
+
+	rootCmd.Flags().BoolVar(&debugOut, "debug", false,
+		"output debug logs, may useful for troubleshooting issues relating to translating\n"+
+			"validation rules. Does not work with --stdout",
 	)
 
 	rootCmd.SetFlagErrorFunc(func(cmd *cobra.Command, err error) error {
@@ -151,6 +158,8 @@ func runCommand(cmd *cobra.Command, args []string) error {
 		RequireAll:                requireAll,
 		AllowAdditionalProperties: !disallowAdditionalProperties,
 		AllowEmpty:                allowEmpty,
+		DebugOut:                  debugOut && !outputStdOut,
+		SuppressLogging:           outputStdOut,
 	})
 	if err != nil {
 		return fmt.Errorf("error creating schema: %w", err)
@@ -179,7 +188,7 @@ func runCommand(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("error writing schema to %q: %w", outputPath, err)
 	}
-	fmt.Printf("Schema written to %q\n", outputPath)
+	fmt.Printf("Info: Schema written to %q\n", outputPath)
 
 	return nil
 }
