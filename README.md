@@ -302,6 +302,74 @@ This is actually a slight behaviour change from the validator used by terraform.
 For behaviour more consistent with Terraform, the flag `--nullable-all` can be used to reset the default value for nullable to be true. Note: this rule only applies to variables which have not explicitly set the value of nullable themselves. See [Terraform documentation on nullable](https://developer.hashicorp.com/terraform/language/values/variables#disallowing-null-input-values
 ).
 
+As an example, here is a Terraform configuration file which does not specify `nullable`:
+
+```hcl
+variable "name" {
+    type = string
+    nullable = false
+}
+
+variable "age" {
+    type = number
+    default = 10
+}
+```
+
+Without `--nullable-all`, this would result in the following JSON Schema file: 
+
+```json
+{
+    "additionalProperties": true,
+    "properties": {
+        "age": {
+            "default": 10,
+            "type": "number"
+        },
+        "name": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "age",
+        "name"
+    ]
+}
+```
+
+And if `--nullable-all` is set to true, then the 'default' value for nullable will be true, so the schema will change to reflect this:
+
+```json
+{
+    "additionalProperties": true,
+    "properties": {
+        "age": {
+            "anyOf": [
+                {
+                    "title": "null",
+                    "type": "null"
+                },
+                {
+                    "title": "number",
+                    "type": "number"
+                }
+            ],
+            "default": 10,
+            "title": "age: Select a type"
+        },
+        "name": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "age",
+        "name"
+    ]
+}
+```
+
+`name` is not affected here since it has `nullable = false` in its HCL definition.
+
 ### Default Handling
 
 Default handling is relatively straightforward. The default specified in Terraform is rendered to a JSON object, and added to the default field in the JSON Schema. Type checking is not performed on the default value. This is in line with how the JSON Schema creators generally expect this field to be used. See their notes on [annotations](https://json-schema.org/understanding-json-schema/reference/annotations#:~:text=The%20default%20keyword%20specifies%20a%20default%20value.).
