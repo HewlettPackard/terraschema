@@ -1,0 +1,218 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"additionalProperties": true,
+	"properties": {
+		"a_bool": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"title": "boolean",
+					"type": "boolean"
+				}
+			],
+			"default": false,
+			"description": "This is a boolean",
+			"title": "a_bool: Select a type"
+		},
+		"a_list": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"items": {
+						"type": "string"
+					},
+					"title": "array",
+					"type": "array"
+				}
+			],
+			"default": [
+				"a",
+				"b",
+				"c"
+			],
+			"description": "This is a list of strings",
+			"title": "a_list: Select a type"
+		},
+		"a_map_of_strings": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"additionalProperties": {
+						"type": "string"
+					},
+					"title": "object",
+					"type": "object"
+				}
+			],
+			"default": {
+				"a": "a",
+				"b": "b",
+				"c": "c"
+			},
+			"description": "This is a map of strings",
+			"title": "a_map_of_strings: Select a type"
+		},
+		"a_nullable_string": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				}
+			],
+			"description": "This is a nullable string",
+			"title": "a_nullable_string: Select a type"
+		},
+		"a_number": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"title": "number",
+					"type": "number"
+				}
+			],
+			"description": "This is a number",
+			"title": "a_number: Select a type"
+		},
+		"a_set": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"items": {
+						"type": "string"
+					},
+					"title": "array",
+					"type": "array",
+					"uniqueItems": true
+				}
+			],
+			"default": [
+				"a",
+				"b",
+				"c"
+			],
+			"description": "This is a set of strings",
+			"title": "a_set: Select a type"
+		},
+		"a_string": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				}
+			],
+			"default": "a string",
+			"description": "This is a string",
+			"title": "a_string: Select a type"
+		},
+		"a_tuple": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"items": [
+						{
+							"type": "string"
+						},
+						{
+							"type": "number"
+						},
+						{
+							"type": "boolean"
+						}
+					],
+					"maxItems": 3,
+					"minItems": 3,
+					"title": "array",
+					"type": "array"
+				}
+			],
+			"default": [
+				"a",
+				1,
+				true
+			],
+			"description": "This is a tuple",
+			"title": "a_tuple: Select a type"
+		},
+		"a_variable_in_another_file": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				}
+			],
+			"default": "",
+			"description": "a string",
+			"title": "a_variable_in_another_file: Select a type"
+		},
+		"an_object": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"additionalProperties": true,
+					"properties": {
+						"a": {
+							"type": "string"
+						},
+						"b": {
+							"type": "number"
+						},
+						"c": {
+							"type": "boolean"
+						}
+					},
+					"required": [
+						"a",
+						"b",
+						"c"
+					],
+					"title": "object",
+					"type": "object"
+				}
+			],
+			"default": {
+				"a": "a",
+				"b": 1,
+				"c": true
+			},
+			"description": "This is an object",
+			"title": "an_object: Select a type"
+		}
+	},
+	"required": [
+		"a_nullable_string",
+		"a_number"
+	]
+}

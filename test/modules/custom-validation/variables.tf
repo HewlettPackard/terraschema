@@ -163,7 +163,7 @@ variable "a_string_enum_escaped_characters_kind_1" {
   type        = string
   description = "A string variable that must some complicated escaped characters"
   validation {
-    condition      = contains(["\\", "\"", "\\\"", "$${abc}","\n","\t","10%","10%%","$a","$$a","\r","\\r"], var.a_string_enum_escaped_characters_kind_1)
+    condition      = contains(["\\", "\"", "\\\"", "$${abc}","\n","\t","10%","10%%","$a","$$a","\r","\\r", null, "<", ">", "&"], var.a_string_enum_escaped_characters_kind_1)
     error_message  = "Invalid value for a_string_enum_escaped_characters"
   }
   default = "\\"
@@ -173,7 +173,7 @@ variable "a_string_enum_escaped_characters_kind_2" {
   type        = string
   description = "A string variable that must some complicated escaped characters"
   validation {
-    condition      = var.a_string_enum_escaped_characters_kind_2 == "\\" || var.a_string_enum_escaped_characters_kind_2 == "\"" || var.a_string_enum_escaped_characters_kind_2 == "\\\"" || var.a_string_enum_escaped_characters_kind_2 == "$${abc}" || var.a_string_enum_escaped_characters_kind_2 == "\n" || var.a_string_enum_escaped_characters_kind_2 == "\t" || var.a_string_enum_escaped_characters_kind_2 == "10%" || var.a_string_enum_escaped_characters_kind_2 == "10%%" || var.a_string_enum_escaped_characters_kind_2 == "$a" || var.a_string_enum_escaped_characters_kind_2 == "$$a" || var.a_string_enum_escaped_characters_kind_2 == "\r" || var.a_string_enum_escaped_characters_kind_2 == "\\r"
+    condition      = var.a_string_enum_escaped_characters_kind_2 == "\\" || var.a_string_enum_escaped_characters_kind_2 == "\"" || var.a_string_enum_escaped_characters_kind_2 == "\\\"" || var.a_string_enum_escaped_characters_kind_2 == "$${abc}" || var.a_string_enum_escaped_characters_kind_2 == "\n" || var.a_string_enum_escaped_characters_kind_2 == "\t" || var.a_string_enum_escaped_characters_kind_2 == "10%" || var.a_string_enum_escaped_characters_kind_2 == "10%%" || var.a_string_enum_escaped_characters_kind_2 == "$a" || var.a_string_enum_escaped_characters_kind_2 == "$$a" || var.a_string_enum_escaped_characters_kind_2 == "\r" || var.a_string_enum_escaped_characters_kind_2 == "\\r" || var.a_string_enum_escaped_characters_kind_2 == null || var.a_string_enum_escaped_characters_kind_2 == "<" || var.a_string_enum_escaped_characters_kind_2 == ">" || var.a_string_enum_escaped_characters_kind_2  == "&"
     error_message  = "Invalid value for a_string_enum_escaped_characters"
   }
   default = "\""

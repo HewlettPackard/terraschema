@@ -55,6 +55,10 @@ func getNullableNode(name string, typeInterface any, options CreateSchemaOptions
 	}
 	node["title"] = fmt.Sprintf("%s: Select a type", name)
 
+	// this is here until the validation rules are applied, because otherwise they error since "type" is undefined.
+	// This sets validation to apply to the top level, which implies that validation must pass even if the value is null.
+	node["type"] = internalNode["type"]
+
 	return node, nil
 }
 

@@ -1,9 +1,9 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"additionalProperties": true,
+	"additionalProperties": false,
 	"properties": {
 		"a_very_complicated_object": {
-			"additionalProperties": true,
+			"additionalProperties": false,
 			"default": {
 				"b": [
 					[
@@ -82,7 +82,7 @@
 					"type": "object"
 				},
 				"d": {
-					"additionalProperties": true,
+					"additionalProperties": false,
 					"properties": {
 						"a": {
 							"items": {
@@ -137,7 +137,7 @@
 			"type": "object"
 		},
 		"an_object_with_optional": {
-			"additionalProperties": true,
+			"additionalProperties": false,
 			"default": {
 				"a": "a",
 				"b": 1,

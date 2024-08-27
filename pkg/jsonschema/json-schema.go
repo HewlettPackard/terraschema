@@ -64,6 +64,7 @@ func CreateSchema(path string, options CreateSchemaOptions) (map[string]any, err
 	return schemaOut, nil
 }
 
+//nolint:cyclop
 func createNode(name string, v model.TranslatedVariable, options CreateSchemaOptions) (map[string]any, error) {
 	tc, err := reader.GetTypeConstraint(v.Variable.Type)
 	if err != nil {
@@ -113,6 +114,12 @@ func createNode(name string, v model.TranslatedVariable, options CreateSchemaOpt
 
 	if v.Variable.Description != nil {
 		node["description"] = *v.Variable.Description
+	}
+
+	// if nullable is true, then we need to unset the definition for "type" here, since it was only added to
+	// satisfy the validation rules and is not actually a part of the schema.
+	if nullableTranslatedValue {
+		delete(node, "type")
 	}
 
 	return node, nil

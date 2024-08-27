@@ -24,7 +24,7 @@ func parseConditionToNode(ex hcl.Expression, _ string, name string, m *map[strin
 	}
 	t, ok := (*m)["type"].(string)
 	if !ok {
-		return fmt.Errorf("cannot apply validation, type is not defined for %#v", *m)
+		return fmt.Errorf("cannot apply validation, type is not defined for %v", *m)
 	}
 	functions := map[string]conditionMutator{
 		"contains([...],var.input_parameter)":          contains,

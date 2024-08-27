@@ -1,0 +1,12 @@
+{
+	"age": {
+		"default": null,
+		"description": "Your age. Required.",
+		"type": "number"
+	},
+	"name": {
+		"default": "world",
+		"description": "Your name.",
+		"type": "string"
+	}
+}

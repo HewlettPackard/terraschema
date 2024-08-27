@@ -1,0 +1,38 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"additionalProperties": true,
+	"properties": {
+		"age": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"title": "number",
+					"type": "number"
+				}
+			],
+			"description": "Your age. Required.",
+			"title": "age: Select a type"
+		},
+		"name": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				}
+			],
+			"default": "world",
+			"description": "Your name.",
+			"title": "name: Select a type"
+		}
+	},
+	"required": [
+		"age"
+	]
+}

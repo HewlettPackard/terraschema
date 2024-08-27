@@ -1,0 +1,190 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"additionalProperties": true,
+	"properties": {
+		"a_very_complicated_object": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"additionalProperties": true,
+					"properties": {
+						"a": {
+							"type": "string"
+						},
+						"b": {
+							"items": [
+								{
+									"items": {
+										"type": "string"
+									},
+									"type": "array"
+								},
+								{
+									"type": "boolean"
+								}
+							],
+							"maxItems": 2,
+							"minItems": 2,
+							"type": "array"
+						},
+						"c": {
+							"additionalProperties": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							"type": "object"
+						},
+						"d": {
+							"additionalProperties": true,
+							"properties": {
+								"a": {
+									"items": {
+										"items": {
+											"type": "string"
+										},
+										"type": "array"
+									},
+									"type": "array"
+								},
+								"b": {
+									"type": "number"
+								}
+							},
+							"required": [
+								"a",
+								"b"
+							],
+							"type": "object"
+						},
+						"e": {
+							"items": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "number"
+								}
+							],
+							"maxItems": 2,
+							"minItems": 2,
+							"type": "array"
+						},
+						"f": {
+							"items": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							"type": "array",
+							"uniqueItems": true
+						}
+					},
+					"required": [
+						"b",
+						"c",
+						"d",
+						"e",
+						"f"
+					],
+					"title": "object",
+					"type": "object"
+				}
+			],
+			"default": {
+				"b": [
+					[
+						"a",
+						"b",
+						"c"
+					],
+					true
+				],
+				"c": {
+					"a": [
+						"a"
+					],
+					"b": [
+						"b"
+					]
+				},
+				"d": {
+					"a": [
+						[
+							"a",
+							"b"
+						],
+						[
+							"c",
+							"d"
+						]
+					],
+					"b": 1
+				},
+				"e": [
+					"a",
+					1
+				],
+				"f": [
+					[
+						"a"
+					],
+					[
+						"b"
+					],
+					[
+						"a",
+						"b"
+					]
+				]
+			},
+			"description": "This is a very complicated object",
+			"title": "a_very_complicated_object: Select a type"
+		},
+		"an_object_with_optional": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"additionalProperties": true,
+					"properties": {
+						"a": {
+							"type": "string"
+						},
+						"b": {
+							"type": "number"
+						},
+						"c": {
+							"type": "boolean"
+						},
+						"d": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"a",
+						"b",
+						"c"
+					],
+					"title": "object",
+					"type": "object"
+				}
+			],
+			"default": {
+				"a": "a",
+				"b": 1,
+				"c": true
+			},
+			"description": "This is an object variable with an optional field",
+			"title": "an_object_with_optional: Select a type"
+		}
+	},
+	"required": []
+}

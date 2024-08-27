@@ -1,0 +1,96 @@
+{
+	"a_bool": {
+		"default": false,
+		"description": "This is a boolean",
+		"type": "bool"
+	},
+	"a_list": {
+		"default": [
+			"a",
+			"b",
+			"c"
+		],
+		"description": "This is a list of strings",
+		"type": [
+			"list",
+			"string"
+		]
+	},
+	"a_map_of_strings": {
+		"default": {
+			"a": "a",
+			"b": "b",
+			"c": "c"
+		},
+		"description": "This is a map of strings",
+		"type": [
+			"map",
+			"string"
+		]
+	},
+	"a_nullable_string": {
+		"default": null,
+		"description": "This is a nullable string",
+		"nullable": true,
+		"type": "string"
+	},
+	"a_number": {
+		"default": null,
+		"description": "This is a number",
+		"type": "number"
+	},
+	"a_set": {
+		"default": [
+			"a",
+			"b",
+			"c"
+		],
+		"description": "This is a set of strings",
+		"type": [
+			"set",
+			"string"
+		]
+	},
+	"a_string": {
+		"default": "a string",
+		"description": "This is a string",
+		"type": "string"
+	},
+	"a_tuple": {
+		"default": [
+			"a",
+			1,
+			true
+		],
+		"description": "This is a tuple",
+		"type": [
+			"tuple",
+			[
+				"string",
+				"number",
+				"bool"
+			]
+		]
+	},
+	"a_variable_in_another_file": {
+		"default": "",
+		"description": "a string",
+		"type": "string"
+	},
+	"an_object": {
+		"default": {
+			"a": "a",
+			"b": 1,
+			"c": true
+		},
+		"description": "This is an object",
+		"type": [
+			"object",
+			{
+				"a": "string",
+				"b": "number",
+				"c": "bool"
+			}
+		]
+	}
+}
