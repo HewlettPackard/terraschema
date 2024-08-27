@@ -16,6 +16,7 @@ type CreateSchemaOptions struct {
 	AllowEmpty                bool
 	DebugOut                  bool
 	SuppressLogging           bool
+	NullableAll               bool
 }
 
 func CreateSchema(path string, options CreateSchemaOptions) (map[string]any, error) {
@@ -69,8 +70,14 @@ func createNode(name string, v model.TranslatedVariable, options CreateSchemaOpt
 		return nil, fmt.Errorf("getting type constraint for %q: %w", name, err)
 	}
 
-	nullableIsTrue := v.Variable.Nullable != nil && *v.Variable.Nullable
-	node, err := getNodeFromType(name, tc, nullableIsTrue, options)
+	// The default value for nullable is the value of NullableAll. For the purpose of keeping the JSON Schema relatively
+	// clean, this is normally set to false. Setting the default value to true is consistent with Terraform behavior.
+	nullableTranslatedValue := options.NullableAll
+	if v.Variable.Nullable != nil {
+		nullableTranslatedValue = *v.Variable.Nullable
+	}
+
+	node, err := getNodeFromType(name, tc, nullableTranslatedValue, options)
 	if err != nil {
 		return nil, fmt.Errorf("%q: %w", name, err)
 	}

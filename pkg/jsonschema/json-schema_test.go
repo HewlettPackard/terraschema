@@ -36,6 +36,7 @@ func TestCreateSchema(t *testing.T) {
 				RequireAll:                false,
 				AllowAdditionalProperties: true,
 				AllowEmpty:                true,
+				NullableAll:               false,
 			})
 			require.NoError(t, err)
 

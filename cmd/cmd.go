@@ -19,6 +19,7 @@ var (
 	allowEmpty                   bool
 	requireAll                   bool
 	outputStdOut                 bool
+	nullableAll                  bool
 	inputPath                    string
 	outputPath                   string
 	debugOut                     bool
@@ -86,6 +87,10 @@ func init() {
 	rootCmd.Flags().BoolVar(&debugOut, "debug", false,
 		"output debug logs, may useful for troubleshooting issues relating to translating\n"+
 			"validation rules. Does not work with --stdout",
+	)
+
+	rootCmd.Flags().BoolVar(&nullableAll, "nullable-all", false,
+		"make all variables nullable unless nullable set to false explicitly, to make behavior consistent with Terraform",
 	)
 
 	rootCmd.SetFlagErrorFunc(func(cmd *cobra.Command, err error) error {
@@ -160,6 +165,7 @@ func runCommand(cmd *cobra.Command, args []string) error {
 		AllowEmpty:                allowEmpty,
 		DebugOut:                  debugOut && !outputStdOut,
 		SuppressLogging:           outputStdOut,
+		NullableAll:               nullableAll,
 	})
 	if err != nil {
 		return fmt.Errorf("error creating schema: %w", err)

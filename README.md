@@ -65,6 +65,8 @@ running Terraform.
 - `--disallow-additional-properties`: Set additionalProperties to false in the root object and nested objects
   (see [JSON Schema definition](https://json-schema.org/understanding-json-schema/reference/object#additionalproperties)).
 
+- `--nullable-all`: Change the default value for `nullable` in a Variable block to 'true'. This is to make the behaviour more closely reflect Terraform's own validation. See 'Nullable Variables' below.
+
 - `--overwrite`: Allow overwriting an existing file at the output location.
 
 - `--debug`: Print debug logs for variable retrieval and errors related to custom validation rules.
@@ -295,7 +297,10 @@ If `nullable` is true in the `variable` block, then the JSON Schema will be modi
 },
 ```
 
-This is actually a slight behaviour change from the validator used by terraform. If `nullable` is unset, then terraform treats them as `nullable` by default. I chose not to implement that behaviour here and instead am making the Terraform module author specify `nullable = true`. This is because otherwise schema definitions for simple programs would have to become a lot more verbose just to handle this case.
+This is actually a slight behaviour change from the validator used by terraform. If `nullable` is unset, then terraform treats them as `nullable` by default. I chose not to implement that default behaviour here and instead am making the Terraform module author specify `nullable = true`. This is because otherwise schema definitions for simple programs would have to become a lot more verbose just to handle this case.
+
+For behaviour more consistent with Terraform, the flag `--nullable-all` can be used to reset the default value for nullable to be true. Note: this rule only applies to variables which have not explicitly set the value of nullable themselves. See [Terraform documentation on nullable](https://developer.hashicorp.com/terraform/language/values/variables#disallowing-null-input-values
+).
 
 ### Default Handling
 
