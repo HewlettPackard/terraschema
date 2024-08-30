@@ -27,7 +27,7 @@ func TestExpressionToJSONObject_Default(t *testing.T) {
 		name := testCases[i]
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			expected, err := os.ReadFile(filepath.Join(expectedPath, name, "defaults.json"))
+			expected, err := os.ReadFile(filepath.Join(expectedPath, name, "variables.json"))
 			require.NoError(t, err)
 			var expectedMap map[string]any
 			err = json.Unmarshal(expected, &expectedMap)
@@ -49,12 +49,12 @@ func TestExpressionToJSONObject_Default(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			if len(defaults) != len(expectedMap) {
-				t.Errorf("Expected %d variables with defaults, got %d", len(expectedMap), len(varMap))
+			if len(expectedMap) != len(varMap) {
+				t.Errorf("Expected %d variables, got %d", len(expectedMap), len(varMap))
 			}
 
 			for key, val := range defaults {
-				expectedVal, ok := expectedMap[key]
+				expectedVal, ok := expectedMap[key].(map[string]any)["default"]
 				if !ok {
 					t.Errorf("Variable %q not found in expected map", key)
 				}

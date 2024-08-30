@@ -27,7 +27,7 @@ func TestGetTypeConstraint(t *testing.T) {
 		name := testCases[i]
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			expected, err := os.ReadFile(filepath.Join(expectedPath, name, "type-constraints.json"))
+			expected, err := os.ReadFile(filepath.Join(expectedPath, name, "variables.json"))
 			require.NoError(t, err)
 
 			varMap, err := GetVarMap(filepath.Join(tfPath, name), true)
@@ -42,7 +42,7 @@ func TestGetTypeConstraint(t *testing.T) {
 			require.Equal(t, len(varMap), len(expectedMap))
 
 			for key, val := range varMap {
-				expectedVal, ok := expectedMap[key]
+				expectedVal, ok := expectedMap[key].(map[string]any)["type"]
 				if !ok {
 					t.Errorf("Variable %q not found in expected map", key)
 				}

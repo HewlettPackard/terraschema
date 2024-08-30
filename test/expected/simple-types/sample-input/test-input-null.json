@@ -1,0 +1,13 @@
+{
+    "$schema": "../schema.json",
+    "a_bool": null,
+    "a_list": null,
+    "a_map_of_strings": null,
+    "a_nullable_string": null,
+    "a_number": null,
+    "a_set": null,
+    "a_string": null,
+    "a_tuple": null,
+    "a_variable_in_another_file": null,
+    "an_object": null
+}

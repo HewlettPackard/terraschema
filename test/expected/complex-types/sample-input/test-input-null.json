@@ -1,0 +1,5 @@
+{
+    "$schema": "../schema.json",
+    "a_very_complicated_object": null,
+    "an_object_with_optional": null
+}
