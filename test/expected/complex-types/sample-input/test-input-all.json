@@ -53,5 +53,6 @@
         "b": 2,
         "c": false,
         "d": "Optional string"
-    }
+    },
+    "something_else": "string"
 }

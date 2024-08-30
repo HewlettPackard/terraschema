@@ -86,6 +86,7 @@ func getErrorLocationsFromValidationErr(t *testing.T, valErr *jsonschema.Validat
 	return keywordLocations
 }
 
+//nolint:funlen,maintidx
 func TestSampleInput(t *testing.T) {
 	t.Parallel()
 
@@ -95,6 +96,7 @@ func TestSampleInput(t *testing.T) {
 		filePath         string
 		keywordLocations []errorLocation
 	}{
+		// Minimum input
 		{
 			name:             "empty minimum input",
 			filePath:         "../../test/expected/empty/sample-input/test-input-min.json",
@@ -125,6 +127,7 @@ func TestSampleInput(t *testing.T) {
 			schemaPath:       "../../test/expected/custom-validation/schema.json",
 			keywordLocations: nil,
 		},
+		// Maximum input plus an unknown variable, additionalProperties is true
 		{
 			name:             "simple full input",
 			filePath:         "../../test/expected/simple/sample-input/test-input-all.json",
@@ -149,6 +152,41 @@ func TestSampleInput(t *testing.T) {
 			schemaPath:       "../../test/expected/custom-validation/schema.json",
 			keywordLocations: nil,
 		},
+		// Maximum input plus an unknown variable, additionalProperties is false
+		{
+			name:       "simple full input additionalProperties false",
+			filePath:   "../../test/expected/simple/sample-input/test-input-all.json",
+			schemaPath: "../../test/expected/simple/schema-disallow-additional.json",
+			keywordLocations: []errorLocation{
+				{name: "/additionalProperties"},
+			},
+		},
+		{
+			name:       "simple-types full input additionalProperties false",
+			filePath:   "../../test/expected/simple-types/sample-input/test-input-all.json",
+			schemaPath: "../../test/expected/simple-types/schema-disallow-additional.json",
+			keywordLocations: []errorLocation{
+				{name: "/additionalProperties"},
+			},
+		},
+		{
+			name:       "complex-types full input additionalProperties false",
+			filePath:   "../../test/expected/complex-types/sample-input/test-input-all.json",
+			schemaPath: "../../test/expected/complex-types/schema-disallow-additional.json",
+			keywordLocations: []errorLocation{
+				{name: "/additionalProperties"},
+			},
+		},
+		{
+			name:       "custom-validation full input additionalProperties false",
+			filePath:   "../../test/expected/custom-validation/sample-input/test-input-all.json",
+			schemaPath: "../../test/expected/custom-validation/schema-disallow-additional.json",
+			keywordLocations: []errorLocation{
+				{name: "/additionalProperties"},
+				{name: "/properties/an_object_maximum_minimum_items/additionalProperties"},
+			},
+		},
+		// bad input on all fields
 		{
 			name:       "simple bad input",
 			filePath:   "../../test/expected/simple/sample-input/test-input-bad.json",
@@ -269,6 +307,98 @@ func TestSampleInput(t *testing.T) {
 						{name: "/properties/an_object_maximum_minimum_items/properties/name/type"},
 					},
 				},
+			},
+		},
+		// null input on all fields, nullableAll is false
+		{
+			name:       "simple null input nullableAll false",
+			filePath:   "../../test/expected/simple/sample-input/test-input-null.json",
+			schemaPath: "../../test/expected/simple/schema.json",
+			keywordLocations: []errorLocation{
+				{name: "/properties/age/type"},
+				{name: "/properties/name/type"},
+			},
+		},
+		{
+			name:       "simple-types null input nullableAll false",
+			filePath:   "../../test/expected/simple-types/sample-input/test-input-null.json",
+			schemaPath: "../../test/expected/simple-types/schema.json",
+			keywordLocations: []errorLocation{
+				{name: "/properties/a_bool/type"},
+				{name: "/properties/a_list/type"},
+				{name: "/properties/a_map_of_strings/type"},
+				{name: "/properties/a_number/type"},
+				{name: "/properties/a_set/type"},
+				{name: "/properties/a_string/type"},
+				{name: "/properties/a_tuple/type"},
+				{name: "/properties/a_variable_in_another_file/type"},
+				{name: "/properties/an_object/type"},
+			},
+		},
+		{
+			name:       "complex-types null input nullableAll false",
+			filePath:   "../../test/expected/complex-types/sample-input/test-input-null.json",
+			schemaPath: "../../test/expected/complex-types/schema.json",
+			keywordLocations: []errorLocation{
+				{name: "/properties/a_very_complicated_object/type"},
+				{name: "/properties/an_object_with_optional/type"},
+			},
+		},
+		{
+			name:       "custom-validation null input nullableAll false",
+			filePath:   "../../test/expected/custom-validation/sample-input/test-input-null.json",
+			schemaPath: "../../test/expected/custom-validation/schema.json",
+			keywordLocations: []errorLocation{
+				{name: "/properties/a_list_maximum_minimum_length/type"},
+				{name: "/properties/a_map_maximum_minimum_entries/type"},
+				{name: "/properties/a_number_enum_kind_1/type"},
+				{name: "/properties/a_number_enum_kind_2/type"},
+				{name: "/properties/a_number_exclusive_maximum_minimum/type"},
+				{name: "/properties/a_number_maximum_minimum/type"},
+				{name: "/properties/a_set_maximum_minimum_items/type"},
+				{name: "/properties/a_string_enum_escaped_characters_kind_1/type"},
+				{name: "/properties/a_string_enum_escaped_characters_kind_2/type"},
+				{name: "/properties/a_string_enum_kind_1/type"},
+				{name: "/properties/a_string_enum_kind_2/type"},
+				{name: "/properties/a_string_length_over_defined/type"},
+				{name: "/properties/a_string_maximum_minimum_length/type"},
+				{name: "/properties/a_string_pattern_1/type"},
+				{name: "/properties/a_string_pattern_2/type"},
+				{name: "/properties/a_string_set_length/type"},
+				{name: "/properties/an_object_maximum_minimum_items/type"},
+			},
+		},
+		// null input on all fields, nullableAll is true
+		{
+			name:             "simple null input nullableAll true",
+			filePath:         "../../test/expected/simple/sample-input/test-input-null.json",
+			schemaPath:       "../../test/expected/simple/schema-nullable-all.json",
+			keywordLocations: nil,
+		},
+		{
+			name:             "simple-types null input nullableAll true",
+			filePath:         "../../test/expected/simple-types/sample-input/test-input-null.json",
+			schemaPath:       "../../test/expected/simple-types/schema-nullable-all.json",
+			keywordLocations: nil,
+		},
+		{
+			name:             "complex-types null input nullableAll true",
+			filePath:         "../../test/expected/complex-types/sample-input/test-input-null.json",
+			schemaPath:       "../../test/expected/complex-types/schema-nullable-all.json",
+			keywordLocations: nil,
+		},
+		{
+			// of note: custom validation still applies to nullable fields, and sometimes 'null' doesn't satisfy the
+			// condition, meaning these fields effectively can't be null.
+			// This seems to primarily be the case for "enum" fields. Other fields tend to ignore this error, in JSON Schema.
+			name:       "custom-validation null input nullableAll true",
+			filePath:   "../../test/expected/custom-validation/sample-input/test-input-null.json",
+			schemaPath: "../../test/expected/custom-validation/schema-nullable-all.json",
+			keywordLocations: []errorLocation{
+				{name: "/properties/a_number_enum_kind_1/enum"},
+				{name: "/properties/a_number_enum_kind_2/enum"},
+				{name: "/properties/a_string_enum_kind_1/enum"},
+				{name: "/properties/a_string_enum_kind_2/enum"},
 			},
 		},
 	}

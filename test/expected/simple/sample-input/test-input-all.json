@@ -1,5 +1,6 @@
 {
     "$schema": "../schema.json",
     "name": "Aisling",
-    "age": 24
+    "age": 24,
+    "something_else": "string"
 }

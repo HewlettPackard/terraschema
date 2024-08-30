@@ -29,5 +29,6 @@
         "a": "d",
         "b": 2,
         "c": false
-    }
+    },
+    "something_else": "string"
 }

@@ -22,5 +22,6 @@
     "an_object_maximum_minimum_items": {
         "name": "a",
         "other_name": "this is an additional property, terraform will ignore it"
-    }
+    },
+    "something_else": "string"
 }
