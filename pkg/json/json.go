@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"slices"
 
 	"github.com/HewlettPackard/terraschema/pkg/model"
 	"github.com/HewlettPackard/terraschema/pkg/reader"
@@ -16,8 +17,9 @@ type ExportVariablesOptions struct {
 	SuppressLogging bool
 	// this option is used to escape HTML characters in the output JSON. Since these schema files
 	// aren't intended to be used directly in a web context, this is set to false by default.
-	EscapeJSON bool
-	Indent     string
+	EscapeJSON      bool
+	Indent          string
+	IgnoreVariables []string
 }
 
 type MarshallableVariableBlock struct {
@@ -58,6 +60,9 @@ func ExportVariables(path string, options ExportVariablesOptions) (map[string]Ma
 	}
 
 	for k, v := range varMap {
+		if slices.Contains(options.IgnoreVariables, k) {
+			continue
+		}
 		jsonMap[k] = MarshallableVariableBlock{v, options.EscapeJSON, options.Indent}
 	}
 

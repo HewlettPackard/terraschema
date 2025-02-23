@@ -24,6 +24,7 @@ func TestCreateSchema(t *testing.T) {
 		"simple-types",
 		"complex-types",
 		"custom-validation",
+		"ignore-variables",
 	}
 	for i := range testCases {
 		name := testCases[i]
@@ -37,6 +38,7 @@ func TestCreateSchema(t *testing.T) {
 				AllowAdditionalProperties: true,
 				AllowEmpty:                true,
 				NullableAll:               false,
+				IgnoreVariables:           []string{"ignored", "also_ignored"},
 			})
 			require.NoError(t, err)
 

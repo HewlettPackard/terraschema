@@ -17,6 +17,7 @@ type CreateSchemaOptions struct {
 	DebugOut                  bool
 	SuppressLogging           bool
 	NullableAll               bool
+	IgnoreVariables           []string
 }
 
 func CreateSchema(path string, options CreateSchemaOptions) (map[string]any, error) {
@@ -42,6 +43,9 @@ func CreateSchema(path string, options CreateSchemaOptions) (map[string]any, err
 	properties := make(map[string]any)
 	requiredArray := []any{}
 	for name, variable := range varMap {
+		if slices.Contains(options.IgnoreVariables, name) {
+			continue
+		}
 		if variable.Required && !options.RequireAll {
 			requiredArray = append(requiredArray, name)
 		}
