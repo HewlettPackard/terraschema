@@ -42,3 +42,14 @@ variable "a_very_complicated_object" {
     }
     description = "This is a very complicated object"
 }
+
+variable "a_nested_object" {
+    type = object({
+        c = map(object({
+            cc = map(object({
+                ccc = string
+            }))
+        }))
+    })
+    description = "This is a nested object"
+}

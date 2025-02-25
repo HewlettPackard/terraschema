@@ -154,7 +154,14 @@ func getMap(in []any, options CreateSchemaOptions) (map[string]any, error) {
 	if err != nil {
 		return nil, fmt.Errorf("map: %w", err)
 	}
-	node["additionalProperties"] = newNode
+
+	if newNode["type"] == "object" {
+		for k, v := range newNode {
+			node[k] = v
+		}
+	} else {
+		node["additionalProperties"] = newNode
+	}
 
 	return node, nil
 }

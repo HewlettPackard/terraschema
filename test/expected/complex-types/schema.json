@@ -2,6 +2,37 @@
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"additionalProperties": true,
 	"properties": {
+		"a_nested_object": {
+			"additionalProperties": true,
+			"description": "This is a nested object",
+			"type": "object",
+			"properties": {
+				"c": {
+					"type": "object",
+					"additionalProperties": true,
+					"properties": {
+						"cc": {
+							"type": "object",
+							"additionalProperties": true,
+							"properties": {
+								"ccc": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"ccc"
+							]
+						}
+					},
+					"required": [
+						"cc"
+					]
+				}
+			},
+			"required": [
+				"c"
+			]
+		},
 		"a_very_complicated_object": {
 			"additionalProperties": true,
 			"default": {
@@ -166,6 +197,8 @@
 			"type": "object"
 		}
 	},
-	"required": [],
+	"required": [
+		"a_nested_object"
+	],
 	"type": "object"
 }
