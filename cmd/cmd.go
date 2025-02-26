@@ -107,7 +107,8 @@ func init() {
 			"web context",
 	)
 	rootCmd.Flags().StringSliceVar(&ignoreVariables, "ignore-variable", []string{},
-		"ignore variable by name when generating schema or exporting variables, repeating this argument allows you to ignore multiple variables",
+		"ignore a variable by name when generating schema or exporting variables,\n"+
+			"repeating this argument allows you to ignore multiple variables",
 	)
 
 	rootCmd.SetFlagErrorFunc(func(cmd *cobra.Command, err error) error {
