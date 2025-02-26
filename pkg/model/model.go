@@ -13,10 +13,10 @@ type VariableBlock struct {
 	Nullable    *bool          `hcl:"nullable,optional"`
 	// Sensitive is ignored.
 	Sensitive *bool `hcl:"sensitive,optional"`
-	// Validation blocks can be used to add extra rules to the JSON schema, as long as their conditions
+	// Validations blocks can be used to add extra rules to the JSON schema, as long as their conditions
 	// are written in a certain format.
-	Validation *ValidationBlock `hcl:"validation,block"`
-	Type       hcl.Expression   `hcl:"type,optional"`
+	Validations []ValidationBlock `hcl:"validation,block"`
+	Type        hcl.Expression    `hcl:"type,optional"`
 }
 
 type ValidationBlock struct {
@@ -29,8 +29,8 @@ type ValidationBlock struct {
 // This is done here because it can be difficult to extract this information from pure hcl.Expressions as present in
 // the Variable struct without further context. Required is used internally, and the others are for debugging.
 type TranslatedVariable struct {
-	// if the variable has a validation block, this stores its condition as a string. This is useful for debugging.
-	ConditionAsString *string
+	// if the variable has validation blocks, this stores their conditions as a string. This is useful for debugging.
+	ConditionsAsString []string
 	// DefaultAsString is the default value of the variable, as a string. This is useful for debugging complex default values.
 	DefaultAsString *string
 	// TypeAsString is the type of the variable, as a string. This is useful for debugging complex types, such as objects.

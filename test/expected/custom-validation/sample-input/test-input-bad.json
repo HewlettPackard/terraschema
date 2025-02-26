@@ -6,7 +6,18 @@
     "a_number_enum_kind_2": 5,
     "a_number_exclusive_maximum_minimum": 100,
     "a_number_maximum_minimum": 100,
-    "a_set_maximum_minimum_items": ["a", "a", "a", "a", "a", "a", "a", "a", "a", "a"],
+    "a_set_maximum_minimum_items": [
+        "a",
+        "a",
+        "a",
+        "a",
+        "a",
+        "a",
+        "a",
+        "a",
+        "a",
+        "a"
+    ],
     "a_string_enum_escaped_characters_kind_1": "\\\\",
     "a_string_enum_escaped_characters_kind_2": "\\t",
     "a_string_enum_kind_1": "d",
@@ -16,7 +27,8 @@
     "a_string_pattern_2": "#bcdefg",
     "an_object_maximum_minimum_items": {
         "name": false,
-        "number":1,
+        "number": 1,
         "large": false
-    }
+    },
+    "a_string_multiple_validation_conditions": "a"
 }

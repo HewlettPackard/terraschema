@@ -91,19 +91,20 @@ func createNode(name string, v model.TranslatedVariable, options CreateSchemaOpt
 		node["default"] = def
 	}
 
-	if v.Variable.Validation != nil && v.ConditionAsString != nil {
-		err = parseConditionToNode(v.Variable.Validation.Condition, *v.ConditionAsString, name, &node)
+	// Apply all specified validation rules in the order specified in the HCL config.
+	for i, validation := range v.Variable.Validations {
+		err = parseConditionToNode(validation.Condition, v.ConditionsAsString[i], name, &node)
 		// if an error occurs, log it and continue.
 		if err != nil && !options.SuppressLogging {
 			fmt.Printf("Warning: couldn't apply validation for %q with condition %q: %v\n",
 				name,
-				*v.ConditionAsString,
+				v.ConditionsAsString[i],
 				err,
 			)
 			// if the debug flag is set, print all the errors returned by each of the rules as they try to apply to the condition.
 			var validationError ValidationApplyError
 			if ok := errors.As(err, &validationError); ok && options.DebugOut {
-				fmt.Printf("Debug: condition located at %q\n", v.Variable.Validation.Condition.Range().String())
+				fmt.Printf("Debug: condition located at %q\n", validation.Condition.Range().String())
 				fmt.Println("Debug: the following errors occurred:")
 				for k, v := range validationError.ErrorMap {
 					fmt.Printf("\t%s: %v\n", k, v)

@@ -29,12 +29,12 @@ type MarshallableVariableBlock struct {
 var _ json.Marshaler = MarshallableVariableBlock{}
 
 type JSONVariableBlock struct {
-	Default     *any                 `json:"default,omitempty"`
-	Description *string              `json:"description,omitempty"`
-	Nullable    *bool                `json:"nullable,omitempty"`
-	Sensitive   *bool                `json:"sensitive,omitempty"`
-	Validation  *JSONValidationBlock `json:"validation,omitempty"`
-	Type        *any                 `json:"type,omitempty"`
+	Default     *any                  `json:"default,omitempty"`
+	Description *string               `json:"description,omitempty"`
+	Nullable    *bool                 `json:"nullable,omitempty"`
+	Sensitive   *bool                 `json:"sensitive,omitempty"`
+	Validations []JSONValidationBlock `json:"validation,omitempty"`
+	Type        *any                  `json:"type,omitempty"`
 }
 
 type JSONValidationBlock struct {
@@ -83,13 +83,16 @@ func (j MarshallableVariableBlock) MarshalJSON() ([]byte, error) {
 	}
 	translatedBlock.Default = &translatedDefault
 
-	if j.Variable.Validation != nil {
-		if j.ConditionAsString == nil {
-			return nil, errors.New("validation block present with no condition")
+	if len(j.Variable.Validations) != 0 {
+		if len(j.ConditionsAsString) != len(j.Variable.Validations) {
+			return nil, errors.New("mismatch between the number of validation blocks and conditions")
 		}
-		translatedBlock.Validation = &JSONValidationBlock{
-			Condition:    *j.ConditionAsString,
-			ErrorMessage: j.Variable.Validation.ErrorMessage,
+		translatedBlock.Validations = make([]JSONValidationBlock, len(j.Variable.Validations))
+		for i := range translatedBlock.Validations {
+			translatedBlock.Validations[i] = JSONValidationBlock{
+				Condition:    j.ConditionsAsString[i],
+				ErrorMessage: j.Variable.Validations[i].ErrorMessage,
+			}
 		}
 	}
 

@@ -1,6 +1,9 @@
 {
     "$schema": "../schema.json",
-    "a_list_maximum_minimum_length": ["a", "b"],
+    "a_list_maximum_minimum_length": [
+        "a",
+        "b"
+    ],
     "a_map_maximum_minimum_entries": {
         "a": "a",
         "b": "b"
@@ -9,7 +12,10 @@
     "a_number_enum_kind_2": 2,
     "a_number_exclusive_maximum_minimum": 2,
     "a_number_maximum_minimum": 1,
-    "a_set_maximum_minimum_items": ["a", "b"],
+    "a_set_maximum_minimum_items": [
+        "a",
+        "b"
+    ],
     "a_string_enum_escaped_characters_kind_1": "${abc}",
     "a_string_enum_escaped_characters_kind_2": "\"",
     "a_string_enum_kind_1": "a",
@@ -23,5 +29,6 @@
         "name": "a",
         "other_name": "this is an additional property, terraform will ignore it"
     },
+    "a_string_multiple_validation_conditions": "abcd",
     "something_else": "string"
 }

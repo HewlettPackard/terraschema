@@ -153,6 +153,13 @@
 			"minLength": 1,
 			"type": "string"
 		},
+		"a_string_multiple_validation_conditions": {
+			"default": "hello",
+			"description": "A string which has a minimum and maximum length, defined as 2 separate validation blocks",
+			"maxLength": 7,
+			"minLength": 2,
+			"type": "string"
+		},
 		"a_string_pattern_1": {
 			"default": "1.1.1.1",
 			"description": "A string variable that must be a valid IPv4 address",

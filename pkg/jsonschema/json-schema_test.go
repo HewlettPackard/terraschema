@@ -298,6 +298,7 @@ func TestSampleInput(t *testing.T) {
 				{name: "/properties/a_string_enum_kind_1/enum"},
 				{name: "/properties/a_string_enum_kind_2/type"},
 				{name: "/properties/a_string_maximum_minimum_length/maxLength"},
+				{name: "/properties/a_string_multiple_validation_conditions/minLength"},
 				{name: "/properties/a_string_pattern_1/pattern"},
 				{name: "/properties/a_string_pattern_2/pattern"},
 				{
@@ -362,6 +363,7 @@ func TestSampleInput(t *testing.T) {
 				{name: "/properties/a_string_enum_kind_2/type"},
 				{name: "/properties/a_string_length_over_defined/type"},
 				{name: "/properties/a_string_maximum_minimum_length/type"},
+				{name: "/properties/a_string_multiple_validation_conditions/type"},
 				{name: "/properties/a_string_pattern_1/type"},
 				{name: "/properties/a_string_pattern_2/type"},
 				{name: "/properties/a_string_set_length/type"},

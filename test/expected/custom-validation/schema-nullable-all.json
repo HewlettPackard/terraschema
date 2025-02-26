@@ -283,6 +283,23 @@
 			"minLength": 1,
 			"title": "a_string_maximum_minimum_length: Select a type"
 		},
+		"a_string_multiple_validation_conditions": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				}
+			],
+			"default": "hello",
+			"description": "A string which has a minimum and maximum length, defined as 2 separate validation blocks",
+			"maxLength": 7,
+			"minLength": 2,
+			"title": "a_string_multiple_validation_conditions: Select a type"
+		},
 		"a_string_pattern_1": {
 			"anyOf": [
 				{

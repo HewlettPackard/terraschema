@@ -16,5 +16,6 @@
     "a_string_pattern_1": null,
     "a_string_pattern_2": null,
     "a_string_set_length": null,
-    "an_object_maximum_minimum_items": null 
+    "an_object_maximum_minimum_items": null,
+    "a_string_multiple_validation_conditions": null
 }

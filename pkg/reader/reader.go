@@ -111,10 +111,10 @@ func getTranslatedVariableFromBlock(block *hcl.Block, file *hcl.File) (string, m
 		out.TypeAsString = &typeAsString
 	}
 
-	// if a validation block does not exist, variable.Validation is nil.
-	if variable.Validation != nil && variable.Validation.Condition != nil {
-		conditionAsString := printToString(variable.Validation.Condition, file)
-		out.ConditionAsString = &conditionAsString
+	// plaintext print all condition expressions into the ConditionsAsString field.
+	out.ConditionsAsString = make([]string, len(variable.Validations))
+	for i, validation := range variable.Validations {
+		out.ConditionsAsString[i] = printToString(validation.Condition, file)
 	}
 
 	return name, out, nil

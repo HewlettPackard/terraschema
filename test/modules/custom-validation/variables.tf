@@ -178,3 +178,21 @@ variable "a_string_enum_escaped_characters_kind_2" {
   }
   default = "\""
 }
+
+variable "a_string_multiple_validation_conditions" {
+  type = string
+  description = "A string which has a minimum and maximum length, defined as 2 separate validation blocks"
+  validation {
+    condition = length(var.a_string_multiple_validation_conditions) < 8
+    error_message = "Must be fewer than 8 characters"
+  }
+  validation {
+    condition = length(var.a_string_multiple_validation_conditions) >= 1
+    error_message = "Must have greater than or equal to 1 character (note: redundant check for test)"
+  }
+  validation {
+    condition = length(var.a_string_multiple_validation_conditions) >= 2
+    error_message = "Must have greater than or equal to 2 characters"
+  }
+  default = "hello"
+}
