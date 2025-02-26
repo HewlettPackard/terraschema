@@ -51,5 +51,12 @@ variable "a_nested_object" {
             }))
         }))
     })
+    default = {
+        c = {
+            cc = {
+                ccc = "c"
+            }
+        }
+    }
     description = "This is a nested object"
 }

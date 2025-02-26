@@ -1,4 +1,36 @@
 {
+	"a_nested_object": {
+		"default": {
+			"c": {
+				"cc": {
+					"ccc": "c"
+				}
+			}
+		},
+		"description": "This is a nested object",
+		"type": [
+			"object",
+			{
+				"c": [
+					"map",
+					[
+						"object",
+						{
+							"cc": [
+								"map",
+								[
+									"object",
+									{
+										"ccc": "string"
+									}
+								]
+							]
+						}
+					]
+				]
+			}
+		]
+	},
 	"a_very_complicated_object": {
 		"default": {
 			"b": [
