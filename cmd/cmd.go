@@ -28,6 +28,7 @@ var (
 	exportVariables              bool
 	escapeJSON                   bool
 	ignoreVariables              []string
+	customProperties             []string
 )
 
 // rootCmd is the base command for terraschema
@@ -109,6 +110,9 @@ func init() {
 	rootCmd.Flags().StringSliceVar(&ignoreVariables, "ignore-variable", []string{},
 		"ignore a variable by name when generating schema or exporting variables,\n"+
 			"repeating this argument allows you to ignore multiple variables",
+	)
+	rootCmd.Flags().StringSliceVar(&customProperties, "property", []string{},
+		"add a property to the JSON Schema, in the format 'key=value'",
 	)
 
 	rootCmd.SetFlagErrorFunc(func(cmd *cobra.Command, err error) error {
@@ -202,6 +206,7 @@ func runCommand(cmd *cobra.Command, args []string) error {
 			SuppressLogging:           outputStdOut,
 			NullableAll:               nullableAll,
 			IgnoreVariables:           ignoreVariables,
+			CustomProperties:          parseProperties(),
 		})
 		if err != nil {
 			return fmt.Errorf("error creating schema: %w", err)
@@ -240,4 +245,20 @@ func runCommand(cmd *cobra.Command, args []string) error {
 	fmt.Printf("Info: schema written to %q\n", outputPath)
 
 	return nil
+}
+
+func parseProperties() map[string]string {
+	properties := make(map[string]string)
+	for _, prop := range customProperties {
+		keyVal := strings.SplitN(prop, "=", 2)
+		if len(keyVal) != 2 {
+			fmt.Printf("Warning: invalid property %q, skipping\n", prop)
+
+			continue
+		}
+
+		properties[keyVal[0]] = keyVal[1]
+	}
+
+	return properties
 }

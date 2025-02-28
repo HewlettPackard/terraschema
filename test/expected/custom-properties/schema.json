@@ -1,0 +1,21 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "http://example.com/schema",
+	"title": "Example Schema",
+	"additionalProperties": true,
+	"properties": {
+		"age": {
+			"description": "Your age. Required.",
+			"type": "number"
+		},
+		"name": {
+			"default": "world",
+			"description": "Your name.",
+			"type": "string"
+		}
+	},
+	"required": [
+		"age"
+	],
+	"type": "object"
+}
