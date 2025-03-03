@@ -80,7 +80,7 @@ running Terraform.
 
 - `--ignore-variable "<VAR_NAME>"`: Ignore a variable with the name `VAR_NAME` in the schema. This can be used to exclude variables which are not intended to be used in the schema, such as those which are only used in the module itself. This flag can be used multiple times to ignore multiple variables.
 
-- `--property "<KEY>=<VALUE>"`: Add a property to the root object of the schema. This can be used to add metadata to the schema, such as `$id` or `title`. This flag can be used multiple times to add multiple properties.
+- `--property "<KEY>=<VALUE>"`: Add a property to the root object of the schema. This can be used to add metadata to the schema, such as `$id` or `title`. This flag can be used multiple times to add multiple properties. Note: properties defined here are applied to the schema last, so any other property defined by Terraschema may be overwritten by this command. Also note: currently, only string properties may be set using this flag.
 
 # Design
 
