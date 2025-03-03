@@ -1,0 +1,131 @@
+{
+	"$id": "http://example.com/schema",
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"additionalProperties": true,
+	"properties": {
+		"a_bool": {
+			"default": false,
+			"description": "This is a boolean",
+			"type": "boolean"
+		},
+		"a_list": {
+			"default": [
+				"a",
+				"b",
+				"c"
+			],
+			"description": "This is a list of strings",
+			"items": {
+				"type": "string"
+			},
+			"type": "array"
+		},
+		"a_map_of_strings": {
+			"additionalProperties": {
+				"type": "string"
+			},
+			"default": {
+				"a": "a",
+				"b": "b",
+				"c": "c"
+			},
+			"description": "This is a map of strings",
+			"type": "object"
+		},
+		"a_nullable_string": {
+			"anyOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				}
+			],
+			"description": "This is a nullable string",
+			"title": "a_nullable_string: Select a type"
+		},
+		"a_number": {
+			"description": "This is a number",
+			"type": "number"
+		},
+		"a_set": {
+			"default": [
+				"a",
+				"b",
+				"c"
+			],
+			"description": "This is a set of strings",
+			"items": {
+				"type": "string"
+			},
+			"type": "array",
+			"uniqueItems": true
+		},
+		"a_string": {
+			"default": "a string",
+			"description": "This is a string",
+			"type": "string"
+		},
+		"a_tuple": {
+			"default": [
+				"a",
+				1,
+				true
+			],
+			"description": "This is a tuple",
+			"items": [
+				{
+					"type": "string"
+				},
+				{
+					"type": "number"
+				},
+				{
+					"type": "boolean"
+				}
+			],
+			"maxItems": 3,
+			"minItems": 3,
+			"type": "array"
+		},
+		"a_variable_in_another_file": {
+			"default": "",
+			"description": "a string",
+			"type": "string"
+		},
+		"an_object": {
+			"additionalProperties": true,
+			"default": {
+				"a": "a",
+				"b": 1,
+				"c": true
+			},
+			"description": "This is an object",
+			"properties": {
+				"a": {
+					"type": "string"
+				},
+				"b": {
+					"type": "number"
+				},
+				"c": {
+					"type": "boolean"
+				}
+			},
+			"required": [
+				"a",
+				"b",
+				"c"
+			],
+			"type": "object"
+		}
+	},
+	"required": [
+		"a_nullable_string",
+		"a_number"
+	],
+	"title": "Example Schema",
+	"type": "object"
+}

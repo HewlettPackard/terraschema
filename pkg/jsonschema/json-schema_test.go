@@ -53,18 +53,23 @@ func TestCreateSchema(t *testing.T) {
 	}
 }
 
-func TestCreateSchemaWithCustomProperties(t *testing.T) {
+func TestCreateSchemaWithRootProperties(t *testing.T) {
 	t.Parallel()
 	tfPath := "../../test/modules"
 	schemaPath := "../../test/expected"
 	testCases := []string{
-		"custom-properties",
+		"empty",
+		"simple",
+		"simple-types",
+		"complex-types",
+		"custom-validation",
+		"ignore-variables",
 	}
 	for i := range testCases {
 		name := testCases[i]
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			expected, err := os.ReadFile(filepath.Join(schemaPath, name, "schema.json"))
+			expected, err := os.ReadFile(filepath.Join(schemaPath, name, "schema-with-title.json"))
 			require.NoError(t, err)
 
 			result, err := CreateSchema(filepath.Join(tfPath, name), CreateSchemaOptions{
@@ -72,8 +77,8 @@ func TestCreateSchemaWithCustomProperties(t *testing.T) {
 				AllowAdditionalProperties: true,
 				AllowEmpty:                true,
 				NullableAll:               false,
-				IgnoreVariables:           []string{},
-				CustomProperties: map[string]string{
+				IgnoreVariables:           []string{"ignored", "also_ignored"},
+				RootProperties: map[string]string{
 					"$id":   "http://example.com/schema",
 					"title": "Example Schema",
 				},
