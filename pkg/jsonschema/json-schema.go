@@ -18,7 +18,7 @@ type CreateSchemaOptions struct {
 	SuppressLogging           bool
 	NullableAll               bool
 	IgnoreVariables           []string
-	CustomProperties          map[string]string
+	RootProperties            map[string]string
 }
 
 func CreateSchema(path string, options CreateSchemaOptions) (map[string]any, error) {
@@ -67,7 +67,7 @@ func CreateSchema(path string, options CreateSchemaOptions) (map[string]any, err
 	schemaOut["required"] = requiredArray
 
 	// Add  the custom properties in last to allow overriding the default properties.
-	for key, value := range options.CustomProperties {
+	for key, value := range options.RootProperties {
 		schemaOut[key] = value
 	}
 

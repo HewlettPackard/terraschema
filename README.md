@@ -78,9 +78,9 @@ running Terraform.
 
 - `--escape-json`: Escape special characters in the JSON (`<`,`>` and `&`) so that the schema can be used in a web context. By default, this behaviour is disabled so the JSON file can be read more easily, though it does not effect external programs such as `jq`.
 
-- `--ignore-variable=<VAR_NAME>`: Ignore a variable with the name `VAR_NAME` in the schema. This can be used to exclude variables which are not intended to be used in the schema, such as those which are only used in the module itself. This flag can be used multiple times to ignore multiple variables.
+- `--ignore-variable "<VAR_NAME>"`: Ignore a variable with the name `VAR_NAME` in the schema. This can be used to exclude variables which are not intended to be used in the schema, such as those which are only used in the module itself. This flag can be used multiple times to ignore multiple variables.
 
-- `--property=<KEY>=<VALUE>`: Add a property to the root object of the schema. This can be used to add metadata to the schema, such as `$id` or `title`. This flag can be used multiple times to add multiple properties.
+- `--property "<KEY>=<VALUE>"`: Add a property to the root object of the schema. This can be used to add metadata to the schema, such as `$id` or `title`. This flag can be used multiple times to add multiple properties.
 
 # Design
 

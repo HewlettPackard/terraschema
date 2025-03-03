@@ -28,7 +28,7 @@ var (
 	exportVariables              bool
 	escapeJSON                   bool
 	ignoreVariables              []string
-	customProperties             []string
+	rootProperties               []string
 )
 
 // rootCmd is the base command for terraschema
@@ -111,8 +111,8 @@ func init() {
 		"ignore a variable by name when generating schema or exporting variables,\n"+
 			"repeating this argument allows you to ignore multiple variables",
 	)
-	rootCmd.Flags().StringSliceVar(&customProperties, "property", []string{},
-		"add a property to the JSON Schema, in the format 'key=value'",
+	rootCmd.Flags().StringSliceVar(&rootProperties, "root-property", []string{},
+		"add a property to the root of the output JSON Schema, in the format 'key=value'",
 	)
 
 	rootCmd.SetFlagErrorFunc(func(cmd *cobra.Command, err error) error {
@@ -186,6 +186,9 @@ func runCommand(cmd *cobra.Command, args []string) error {
 	jsonIndent := "\t"
 
 	if exportVariables {
+		if len(rootProperties) != 0 {
+			fmt.Println("Warning: setting root properties is not supported for exporting variables, they will be ignored")
+		}
 		outputMap, err = tsjson.ExportVariables(inputPath, tsjson.ExportVariablesOptions{
 			AllowEmpty:      allowEmpty,
 			SuppressLogging: outputStdOut,
@@ -206,7 +209,7 @@ func runCommand(cmd *cobra.Command, args []string) error {
 			SuppressLogging:           outputStdOut,
 			NullableAll:               nullableAll,
 			IgnoreVariables:           ignoreVariables,
-			CustomProperties:          parseProperties(),
+			RootProperties:            parseProperties(),
 		})
 		if err != nil {
 			return fmt.Errorf("error creating schema: %w", err)
@@ -215,6 +218,7 @@ func runCommand(cmd *cobra.Command, args []string) error {
 
 	buffer := &bytes.Buffer{}
 	encoder := json.NewEncoder(buffer)
+
 	encoder.SetEscapeHTML(escapeJSON)
 	encoder.SetIndent("", jsonIndent)
 
@@ -249,7 +253,7 @@ func runCommand(cmd *cobra.Command, args []string) error {
 
 func parseProperties() map[string]string {
 	properties := make(map[string]string)
-	for _, prop := range customProperties {
+	for _, prop := range rootProperties {
 		keyVal := strings.SplitN(prop, "=", 2)
 		if len(keyVal) != 2 {
 			fmt.Printf("Warning: invalid property %q, skipping\n", prop)
