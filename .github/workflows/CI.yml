@@ -16,7 +16,7 @@ jobs:
         with:
           go-version: '1.22'
       - name: GolangCI Lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v7
         with:
           version: v1.60.2
           args: --out-format=colored-line-number
