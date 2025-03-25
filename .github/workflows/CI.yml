@@ -18,8 +18,7 @@ jobs:
       - name: GolangCI Lint
         uses: golangci/golangci-lint-action@v7
         with:
-          version: v1.60.2
-          args: --out-format=colored-line-number
+          version: v2.0.1
   test:
     name: Go Test
     runs-on: ubuntu-latest

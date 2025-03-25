@@ -1,33 +1,8 @@
+version: "2"
 run:
-  timeout: 240s
   tests: true
-
-linters-settings:
-  lll:
-    line-length: 128
-  goimports:
-    local-prefixes: "github.com/HewlettPackard"
-  godox:
-    keywords:
-      - OPTIMIZE
-  exhaustive:
-    default-signifies-exhaustive: true
-  funlen:
-    lines: 90
-    statements: 60
-  cyclop:
-    max-complexity: 14
-  revive:
-    rules:
-      - name: exported
-        arguments:
-          - disableStutteringCheck
-      - name: var-naming
-        # Suppress warnings about Id "initialism" - i.e. make Id and ID valid
-        arguments: [["ID"]]
-
 linters:
-  disable-all: true
+  default: none
   enable:
     - asasalint
     - asciicheck
@@ -49,15 +24,11 @@ linters:
     - gocritic
     - gocyclo
     - godox
-    - gofmt
-    - gofumpt
     - goheader
-    - goimports
     - gomoddirectives
     - gomodguard
     - goprintffuncname
     - gosec
-    - gosimple
     - govet
     - grouper
     - importas
@@ -79,38 +50,66 @@ linters:
     - predeclared
     - revive
     - staticcheck
-    - stylecheck
-    - tenv
     - thelper
     - tparallel
-    - typecheck
     - unconvert
     - unparam
     - unused
     - usestdlibvars
     - whitespace
-
+  settings:
+    cyclop:
+      max-complexity: 14
+    exhaustive:
+      default-signifies-exhaustive: true
+    funlen:
+      lines: 90
+      statements: 60
+    godox:
+      keywords:
+        - OPTIMIZE
+    lll:
+      line-length: 128
+    revive:
+      rules:
+        - name: exported
+          arguments:
+            - disableStutteringCheck
+        - name: var-naming
+          arguments:
+            - - ID
+  exclusions:
+    generated: lax
+    presets:
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - funlen
+        path: _test\.go
+      - path: (.+)\.go$
+        text: exported (const|var|type|method|function) (.+) should have comment (.+) or be unexported
+      - path: (.+)\.go$
+        text: exported (const|var|type|method|function) (.+) should have comment or be unexported
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 issues:
-  include:
-    # Match function comment to function name
-    - EXC0012
-    - EXC0013
-    - EXC0014
-    - EXC0015
-
-  exclude:
-    # We want to allow exporting const/var/type without comments
-    # but enforce comments for functions/methods.
-    # TODO: Remove method and function from the below (when we can)
-    - "exported (const|var|type|method|function) (.+) should have comment (.+) or be unexported"
-    - "exported (const|var|type|method|function) (.+) should have comment or be unexported"
-  # don't read the vendor folder.
-  exclude-dirs-use-default: true
-
-  exclude-rules:
-    # ignore function length for tests as look up tables typically exceed.
-    - linters:
-      - funlen
-      path: _test\.go
-
   max-same-issues: 0
+formatters:
+  enable:
+    - gofmt
+    - gofumpt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/HewlettPackard
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
