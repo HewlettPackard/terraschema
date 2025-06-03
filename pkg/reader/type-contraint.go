@@ -18,7 +18,7 @@ func GetTypeConstraint(in hcl.Expression) (any, error) {
 		return "any", nil
 	}
 
-	t, d := typeexpr.TypeConstraint(in)
+	t, _, d := typeexpr.TypeConstraintWithDefaults(in)
 	if d.HasErrors() {
 		return nil, fmt.Errorf("could not parse type constraint from expression: %w", d)
 	}

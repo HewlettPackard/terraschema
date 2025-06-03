@@ -21,8 +21,8 @@ func getNodeFromType(name string, typeInterface any, nullable bool, options Crea
 	case string:
 		if simpleType, ok := simpleTypeMap[t]; ok {
 			return map[string]any{"type": simpleType}, nil
-		} else if t == "any" {
-			return map[string]any{}, nil
+		} else if t == "any" || t == "dynamic" {
+			return map[string]any{"type": "object", "required": []string{}, "additionalProperties": true}, nil
 		} else {
 			return nil, fmt.Errorf("unsupported type %q", t)
 		}
