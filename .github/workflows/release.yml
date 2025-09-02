@@ -15,7 +15,7 @@ jobs:
     name: GoReleaser
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Create Tag
         run: git tag ${{ github.event.inputs.tag }}
       - uses: actions/setup-go@v5
