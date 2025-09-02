@@ -7,7 +7,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.23.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/spf13/cobra v1.9.1
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/zclconf/go-cty v1.16.4
 )
 
