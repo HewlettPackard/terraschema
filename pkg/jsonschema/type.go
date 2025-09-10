@@ -110,7 +110,7 @@ func getNullableNode(name string, typeInterface any, options CreateSchemaOptions
 
 	internalNode["title"] = title
 
-	node["anyOf"] = []any{
+	node["oneOf"] = []any{
 		map[string]any{"type": "null", "title": "null"},
 		internalNode,
 	}
