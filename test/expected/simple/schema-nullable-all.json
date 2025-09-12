@@ -3,7 +3,8 @@
 	"additionalProperties": true,
 	"properties": {
 		"age": {
-			"anyOf": [
+			"description": "Your age. Required.",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -13,11 +14,12 @@
 					"type": "number"
 				}
 			],
-			"description": "Your age. Required.",
 			"title": "age: Select a type"
 		},
 		"name": {
-			"anyOf": [
+			"default": "world",
+			"description": "Your name.",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -27,8 +29,6 @@
 					"type": "string"
 				}
 			],
-			"default": "world",
-			"description": "Your name.",
 			"title": "name: Select a type"
 		}
 	},
