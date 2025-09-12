@@ -3,7 +3,9 @@
 	"additionalProperties": true,
 	"properties": {
 		"a_complex_condition_with_complex_error_message": {
-			"anyOf": [
+			"default": [],
+			"description": "A list of names that must be 3-24 lowercase letters and numbers.",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -16,34 +18,38 @@
 					"type": "array"
 				}
 			],
-			"default": [],
-			"description": "A list of names that must be 3-24 lowercase letters and numbers.",
 			"title": "a_complex_condition_with_complex_error_message: Select a type"
 		},
 		"a_list_maximum_minimum_length": {
-			"anyOf": [
-				{
-					"title": "null",
-					"type": "null"
-				},
-				{
-					"items": {
-						"type": "string"
-					},
-					"title": "array",
-					"type": "array"
-				}
-			],
 			"default": [
 				"a"
 			],
 			"description": "A list variable that must have a length greater than 0 and less than 10",
 			"maxItems": 9,
 			"minItems": 1,
+			"oneOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"items": {
+						"type": "string"
+					},
+					"title": "array",
+					"type": "array"
+				}
+			],
 			"title": "a_list_maximum_minimum_length: Select a type"
 		},
 		"a_map_maximum_minimum_entries": {
-			"anyOf": [
+			"default": {
+				"a": "a"
+			},
+			"description": "A map variable that must have greater than 0 and less than 10 entries",
+			"maxProperties": 9,
+			"minProperties": 1,
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -56,16 +62,17 @@
 					"type": "object"
 				}
 			],
-			"default": {
-				"a": "a"
-			},
-			"description": "A map variable that must have greater than 0 and less than 10 entries",
-			"maxProperties": 9,
-			"minProperties": 1,
 			"title": "a_map_maximum_minimum_entries: Select a type"
 		},
 		"a_number_enum_kind_1": {
-			"anyOf": [
+			"default": 1,
+			"description": "A number variable that must be one of the values 1, 2, or 3",
+			"enum": [
+				1,
+				2,
+				3
+			],
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -74,27 +81,10 @@
 					"title": "number",
 					"type": "number"
 				}
-			],
-			"default": 1,
-			"description": "A number variable that must be one of the values 1, 2, or 3",
-			"enum": [
-				1,
-				2,
-				3
 			],
 			"title": "a_number_enum_kind_1: Select a type"
 		},
 		"a_number_enum_kind_2": {
-			"anyOf": [
-				{
-					"title": "null",
-					"type": "null"
-				},
-				{
-					"title": "number",
-					"type": "number"
-				}
-			],
 			"default": 1,
 			"description": "A number variable that must be one of the values 1, 2, or 3",
 			"enum": [
@@ -102,10 +92,7 @@
 				2,
 				3
 			],
-			"title": "a_number_enum_kind_2: Select a type"
-		},
-		"a_number_exclusive_maximum_minimum": {
-			"anyOf": [
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -115,14 +102,14 @@
 					"type": "number"
 				}
 			],
+			"title": "a_number_enum_kind_2: Select a type"
+		},
+		"a_number_exclusive_maximum_minimum": {
 			"default": 1,
 			"description": "A number variable that must be greater than 0 and less than 10",
 			"exclusiveMaximum": 10,
 			"exclusiveMinimum": 0,
-			"title": "a_number_exclusive_maximum_minimum: Select a type"
-		},
-		"a_number_maximum_minimum": {
-			"anyOf": [
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -132,14 +119,33 @@
 					"type": "number"
 				}
 			],
+			"title": "a_number_exclusive_maximum_minimum: Select a type"
+		},
+		"a_number_maximum_minimum": {
 			"default": 0,
 			"description": "A number variable that must be between 0 and 10 (inclusive)",
 			"maximum": 10,
 			"minimum": 0,
+			"oneOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"title": "number",
+					"type": "number"
+				}
+			],
 			"title": "a_number_maximum_minimum: Select a type"
 		},
 		"a_set_maximum_minimum_items": {
-			"anyOf": [
+			"default": [
+				"a"
+			],
+			"description": "A set variable that must have a length greater than 0 and less than 10",
+			"maxItems": 9,
+			"minItems": 1,
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -153,25 +159,9 @@
 					"uniqueItems": true
 				}
 			],
-			"default": [
-				"a"
-			],
-			"description": "A set variable that must have a length greater than 0 and less than 10",
-			"maxItems": 9,
-			"minItems": 1,
 			"title": "a_set_maximum_minimum_items: Select a type"
 		},
 		"a_string_enum_escaped_characters_kind_1": {
-			"anyOf": [
-				{
-					"title": "null",
-					"type": "null"
-				},
-				{
-					"title": "string",
-					"type": "string"
-				}
-			],
 			"default": "\\",
 			"description": "A string variable that must some complicated escaped characters",
 			"enum": [
@@ -192,10 +182,7 @@
 				">",
 				"&"
 			],
-			"title": "a_string_enum_escaped_characters_kind_1: Select a type"
-		},
-		"a_string_enum_escaped_characters_kind_2": {
-			"anyOf": [
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -205,6 +192,9 @@
 					"type": "string"
 				}
 			],
+			"title": "a_string_enum_escaped_characters_kind_1: Select a type"
+		},
+		"a_string_enum_escaped_characters_kind_2": {
 			"default": "\"",
 			"description": "A string variable that must some complicated escaped characters",
 			"enum": [
@@ -225,10 +215,7 @@
 				">",
 				"&"
 			],
-			"title": "a_string_enum_escaped_characters_kind_2: Select a type"
-		},
-		"a_string_enum_kind_1": {
-			"anyOf": [
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -238,26 +225,29 @@
 					"type": "string"
 				}
 			],
+			"title": "a_string_enum_escaped_characters_kind_2: Select a type"
+		},
+		"a_string_enum_kind_1": {
 			"default": "a",
 			"description": "A string variable that must be one of the values 'a', 'b', or 'c'",
 			"enum": [
 				"a",
 				"b",
 				"c"
+			],
+			"oneOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				}
 			],
 			"title": "a_string_enum_kind_1: Select a type"
 		},
 		"a_string_enum_kind_2": {
-			"anyOf": [
-				{
-					"title": "null",
-					"type": "null"
-				},
-				{
-					"title": "string",
-					"type": "string"
-				}
-			],
 			"default": "a",
 			"description": "A string variable that must be one of the values 'a', 'b', or 'c'",
 			"enum": [
@@ -265,10 +255,7 @@
 				"b",
 				"c"
 			],
-			"title": "a_string_enum_kind_2: Select a type"
-		},
-		"a_string_length_over_defined": {
-			"anyOf": [
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -278,14 +265,14 @@
 					"type": "string"
 				}
 			],
+			"title": "a_string_enum_kind_2: Select a type"
+		},
+		"a_string_length_over_defined": {
 			"default": "a",
 			"description": "A string variable that must have length 4",
 			"maxLength": 4,
 			"minLength": 4,
-			"title": "a_string_length_over_defined: Select a type"
-		},
-		"a_string_maximum_minimum_length": {
-			"anyOf": [
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -295,14 +282,14 @@
 					"type": "string"
 				}
 			],
+			"title": "a_string_length_over_defined: Select a type"
+		},
+		"a_string_maximum_minimum_length": {
 			"default": "a",
 			"description": "A string variable that must have a length less than 10 and greater than 0",
 			"maxLength": 9,
 			"minLength": 1,
-			"title": "a_string_maximum_minimum_length: Select a type"
-		},
-		"a_string_multiple_validation_conditions": {
-			"anyOf": [
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -312,14 +299,14 @@
 					"type": "string"
 				}
 			],
+			"title": "a_string_maximum_minimum_length: Select a type"
+		},
+		"a_string_multiple_validation_conditions": {
 			"default": "hello",
 			"description": "A string which has a minimum and maximum length, defined as 2 separate validation blocks",
 			"maxLength": 7,
 			"minLength": 2,
-			"title": "a_string_multiple_validation_conditions: Select a type"
-		},
-		"a_string_pattern_1": {
-			"anyOf": [
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -329,13 +316,28 @@
 					"type": "string"
 				}
 			],
+			"title": "a_string_multiple_validation_conditions: Select a type"
+		},
+		"a_string_pattern_1": {
 			"default": "1.1.1.1",
 			"description": "A string variable that must be a valid IPv4 address",
+			"oneOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				}
+			],
 			"pattern": "^[0-9]{1,3}(\\.[0-9]{1,3}){3}$",
 			"title": "a_string_pattern_1: Select a type"
 		},
 		"a_string_pattern_2": {
-			"anyOf": [
+			"default": "#000000",
+			"description": "string that must be a valid colour hex code in the form #RRGGBB",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -345,13 +347,15 @@
 					"type": "string"
 				}
 			],
-			"default": "#000000",
-			"description": "string that must be a valid colour hex code in the form #RRGGBB",
 			"pattern": "^#[0-9a-fA-F]{6}$",
 			"title": "a_string_pattern_2: Select a type"
 		},
 		"a_string_set_length": {
-			"anyOf": [
+			"default": "abcd",
+			"description": "A string variable that must have length 4",
+			"maxLength": 4,
+			"minLength": 4,
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -361,14 +365,17 @@
 					"type": "string"
 				}
 			],
-			"default": "abcd",
-			"description": "A string variable that must have length 4",
-			"maxLength": 4,
-			"minLength": 4,
 			"title": "a_string_set_length: Select a type"
 		},
 		"an_object_maximum_minimum_items": {
-			"anyOf": [
+			"default": {
+				"name": "a",
+				"other_field": "b"
+			},
+			"description": "An object variable that must have fewer than 3 properties",
+			"maxProperties": 2,
+			"minProperties": 1,
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -387,13 +394,6 @@
 					"type": "object"
 				}
 			],
-			"default": {
-				"name": "a",
-				"other_field": "b"
-			},
-			"description": "An object variable that must have fewer than 3 properties",
-			"maxProperties": 2,
-			"minProperties": 1,
 			"title": "an_object_maximum_minimum_items: Select a type"
 		}
 	},

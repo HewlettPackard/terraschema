@@ -109,7 +109,8 @@
 			"type": "object"
 		},
 		"a_nullable_string": {
-			"anyOf": [
+			"description": "This is a nullable string",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -119,7 +120,6 @@
 					"type": "string"
 				}
 			],
-			"description": "This is a nullable string",
 			"title": "a_nullable_string: Select a type"
 		},
 		"a_number": {
