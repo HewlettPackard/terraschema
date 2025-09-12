@@ -3,7 +3,55 @@
 	"additionalProperties": true,
 	"properties": {
 		"a_very_complicated_object": {
-			"anyOf": [
+			"default": {
+				"b": [
+					[
+						"a",
+						"b",
+						"c"
+					],
+					true
+				],
+				"c": {
+					"a": [
+						"a"
+					],
+					"b": [
+						"b"
+					]
+				},
+				"d": {
+					"a": [
+						[
+							"a",
+							"b"
+						],
+						[
+							"c",
+							"d"
+						]
+					],
+					"b": 1
+				},
+				"e": [
+					"a",
+					1
+				],
+				"f": [
+					[
+						"a"
+					],
+					[
+						"b"
+					],
+					[
+						"a",
+						"b"
+					]
+				]
+			},
+			"description": "This is a very complicated object",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -96,58 +144,16 @@
 					"type": "object"
 				}
 			],
-			"default": {
-				"b": [
-					[
-						"a",
-						"b",
-						"c"
-					],
-					true
-				],
-				"c": {
-					"a": [
-						"a"
-					],
-					"b": [
-						"b"
-					]
-				},
-				"d": {
-					"a": [
-						[
-							"a",
-							"b"
-						],
-						[
-							"c",
-							"d"
-						]
-					],
-					"b": 1
-				},
-				"e": [
-					"a",
-					1
-				],
-				"f": [
-					[
-						"a"
-					],
-					[
-						"b"
-					],
-					[
-						"a",
-						"b"
-					]
-				]
-			},
-			"description": "This is a very complicated object",
 			"title": "a_very_complicated_object: Select a type"
 		},
 		"an_object_with_optional": {
-			"anyOf": [
+			"default": {
+				"a": "a",
+				"b": 1,
+				"c": true
+			},
+			"description": "This is an object variable with an optional field",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -177,12 +183,6 @@
 					"type": "object"
 				}
 			],
-			"default": {
-				"a": "a",
-				"b": 1,
-				"c": true
-			},
-			"description": "This is an object variable with an optional field",
 			"title": "an_object_with_optional: Select a type"
 		}
 	},
