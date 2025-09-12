@@ -256,10 +256,10 @@ func TestSampleInput(t *testing.T) {
 					},
 				},
 				{
-					name: "/properties/a_nullable_string/anyOf",
+					name: "/properties/a_nullable_string/oneOf",
 					nestedLocations: []errorLocation{
-						{name: "/properties/a_nullable_string/anyOf/0/type"},
-						{name: "/properties/a_nullable_string/anyOf/1/type"},
+						{name: "/properties/a_nullable_string/oneOf/0/type"},
+						{name: "/properties/a_nullable_string/oneOf/1/type"},
 					},
 				},
 				{name: "/properties/a_set/uniqueItems"},
