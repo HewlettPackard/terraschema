@@ -40,8 +40,7 @@ type JSONVariableBlock struct {
 }
 
 type JSONValidationBlock struct {
-	Condition    string `json:"condition"`
-	ErrorMessage string `json:"error_message"`
+	Condition string `json:"condition"`
 }
 
 func ExportVariables(path string, options ExportVariablesOptions) (map[string]MarshallableVariableBlock, error) {
@@ -95,8 +94,7 @@ func (j MarshallableVariableBlock) MarshalJSON() ([]byte, error) {
 		translatedBlock.Validations = make([]JSONValidationBlock, len(j.Variable.Validations))
 		for i := range translatedBlock.Validations {
 			translatedBlock.Validations[i] = JSONValidationBlock{
-				Condition:    j.ConditionsAsString[i],
-				ErrorMessage: j.Variable.Validations[i].ErrorMessage,
+				Condition: j.ConditionsAsString[i],
 			}
 		}
 	}

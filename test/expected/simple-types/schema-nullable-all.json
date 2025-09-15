@@ -3,7 +3,9 @@
 	"additionalProperties": true,
 	"properties": {
 		"a_bool": {
-			"anyOf": [
+			"default": false,
+			"description": "This is a boolean",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -13,12 +15,16 @@
 					"type": "boolean"
 				}
 			],
-			"default": false,
-			"description": "This is a boolean",
 			"title": "a_bool: Select a type"
 		},
 		"a_list": {
-			"anyOf": [
+			"default": [
+				"a",
+				"b",
+				"c"
+			],
+			"description": "This is a list of strings",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -31,16 +37,112 @@
 					"type": "array"
 				}
 			],
+			"title": "a_list: Select a type"
+		},
+		"a_list_of_any": {
 			"default": [
 				"a",
 				"b",
 				"c"
 			],
-			"description": "This is a list of strings",
-			"title": "a_list: Select a type"
+			"description": "This is a list of any",
+			"oneOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"items": {
+						"anyOf": [
+							{
+								"additionalProperties": true,
+								"title": "object",
+								"type": "object"
+							},
+							{
+								"title": "array",
+								"type": "array"
+							},
+							{
+								"title": "string",
+								"type": "string"
+							},
+							{
+								"title": "number",
+								"type": "number"
+							},
+							{
+								"title": "boolean",
+								"type": "boolean"
+							},
+							{
+								"title": "null",
+								"type": "null"
+							}
+						]
+					},
+					"title": "array",
+					"type": "array"
+				}
+			],
+			"title": "a_list_of_any: Select a type"
+		},
+		"a_map_of_any": {
+			"default": {
+				"a": "a",
+				"b": "b",
+				"c": "c"
+			},
+			"description": "This is a map of any",
+			"oneOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"additionalProperties": {
+						"anyOf": [
+							{
+								"additionalProperties": true,
+								"title": "object",
+								"type": "object"
+							},
+							{
+								"title": "array",
+								"type": "array"
+							},
+							{
+								"title": "string",
+								"type": "string"
+							},
+							{
+								"title": "number",
+								"type": "number"
+							},
+							{
+								"title": "boolean",
+								"type": "boolean"
+							},
+							{
+								"title": "null",
+								"type": "null"
+							}
+						]
+					},
+					"title": "object",
+					"type": "object"
+				}
+			],
+			"title": "a_map_of_any: Select a type"
 		},
 		"a_map_of_strings": {
-			"anyOf": [
+			"default": {
+				"a": "a",
+				"b": "b",
+				"c": "c"
+			},
+			"description": "This is a map of strings",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -53,16 +155,11 @@
 					"type": "object"
 				}
 			],
-			"default": {
-				"a": "a",
-				"b": "b",
-				"c": "c"
-			},
-			"description": "This is a map of strings",
 			"title": "a_map_of_strings: Select a type"
 		},
 		"a_nullable_string": {
-			"anyOf": [
+			"description": "This is a nullable string",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -72,11 +169,11 @@
 					"type": "string"
 				}
 			],
-			"description": "This is a nullable string",
 			"title": "a_nullable_string: Select a type"
 		},
 		"a_number": {
-			"anyOf": [
+			"description": "This is a number",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -86,11 +183,16 @@
 					"type": "number"
 				}
 			],
-			"description": "This is a number",
 			"title": "a_number: Select a type"
 		},
 		"a_set": {
-			"anyOf": [
+			"default": [
+				"a",
+				"b",
+				"c"
+			],
+			"description": "This is a set of strings",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -104,16 +206,61 @@
 					"uniqueItems": true
 				}
 			],
+			"title": "a_set: Select a type"
+		},
+		"a_set_of_any": {
 			"default": [
 				"a",
 				"b",
 				"c"
 			],
-			"description": "This is a set of strings",
-			"title": "a_set: Select a type"
+			"description": "This is a set of any",
+			"oneOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"items": {
+						"anyOf": [
+							{
+								"additionalProperties": true,
+								"title": "object",
+								"type": "object"
+							},
+							{
+								"title": "array",
+								"type": "array"
+							},
+							{
+								"title": "string",
+								"type": "string"
+							},
+							{
+								"title": "number",
+								"type": "number"
+							},
+							{
+								"title": "boolean",
+								"type": "boolean"
+							},
+							{
+								"title": "null",
+								"type": "null"
+							}
+						]
+					},
+					"title": "array",
+					"type": "array",
+					"uniqueItems": true
+				}
+			],
+			"title": "a_set_of_any: Select a type"
 		},
 		"a_string": {
-			"anyOf": [
+			"default": "a string",
+			"description": "This is a string",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -123,12 +270,16 @@
 					"type": "string"
 				}
 			],
-			"default": "a string",
-			"description": "This is a string",
 			"title": "a_string: Select a type"
 		},
 		"a_tuple": {
-			"anyOf": [
+			"default": [
+				"a",
+				1,
+				true
+			],
+			"description": "This is a tuple",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -151,16 +302,12 @@
 					"type": "array"
 				}
 			],
-			"default": [
-				"a",
-				1,
-				true
-			],
-			"description": "This is a tuple",
 			"title": "a_tuple: Select a type"
 		},
 		"a_variable_in_another_file": {
-			"anyOf": [
+			"default": "",
+			"description": "a string",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -170,12 +317,176 @@
 					"type": "string"
 				}
 			],
-			"default": "",
-			"description": "a string",
 			"title": "a_variable_in_another_file: Select a type"
 		},
-		"an_object": {
+		"an_any_as_boolean": {
 			"anyOf": [
+				{
+					"additionalProperties": true,
+					"title": "object",
+					"type": "object"
+				},
+				{
+					"title": "array",
+					"type": "array"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				},
+				{
+					"title": "number",
+					"type": "number"
+				},
+				{
+					"title": "boolean",
+					"type": "boolean"
+				},
+				{
+					"title": "null",
+					"type": "null"
+				}
+			],
+			"default": true,
+			"description": "This is an any",
+			"title": "an_any_as_boolean: Select a type"
+		},
+		"an_any_as_list": {
+			"anyOf": [
+				{
+					"additionalProperties": true,
+					"title": "object",
+					"type": "object"
+				},
+				{
+					"title": "array",
+					"type": "array"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				},
+				{
+					"title": "number",
+					"type": "number"
+				},
+				{
+					"title": "boolean",
+					"type": "boolean"
+				},
+				{
+					"title": "null",
+					"type": "null"
+				}
+			],
+			"default": [],
+			"description": "This is an any",
+			"title": "an_any_as_list: Select a type"
+		},
+		"an_any_as_map": {
+			"anyOf": [
+				{
+					"additionalProperties": true,
+					"title": "object",
+					"type": "object"
+				},
+				{
+					"title": "array",
+					"type": "array"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				},
+				{
+					"title": "number",
+					"type": "number"
+				},
+				{
+					"title": "boolean",
+					"type": "boolean"
+				},
+				{
+					"title": "null",
+					"type": "null"
+				}
+			],
+			"default": {},
+			"description": "This is an any",
+			"title": "an_any_as_map: Select a type"
+		},
+		"an_any_as_number": {
+			"anyOf": [
+				{
+					"additionalProperties": true,
+					"title": "object",
+					"type": "object"
+				},
+				{
+					"title": "array",
+					"type": "array"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				},
+				{
+					"title": "number",
+					"type": "number"
+				},
+				{
+					"title": "boolean",
+					"type": "boolean"
+				},
+				{
+					"title": "null",
+					"type": "null"
+				}
+			],
+			"default": 1,
+			"description": "This is an any",
+			"title": "an_any_as_number: Select a type"
+		},
+		"an_any_as_string": {
+			"anyOf": [
+				{
+					"additionalProperties": true,
+					"title": "object",
+					"type": "object"
+				},
+				{
+					"title": "array",
+					"type": "array"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				},
+				{
+					"title": "number",
+					"type": "number"
+				},
+				{
+					"title": "boolean",
+					"type": "boolean"
+				},
+				{
+					"title": "null",
+					"type": "null"
+				}
+			],
+			"default": "default",
+			"description": "This is an any",
+			"title": "an_any_as_string: Select a type"
+		},
+		"an_object": {
+			"default": {
+				"a": "a",
+				"b": 1,
+				"c": true
+			},
+			"description": "This is an object",
+			"oneOf": [
 				{
 					"title": "null",
 					"type": "null"
@@ -202,13 +513,167 @@
 					"type": "object"
 				}
 			],
-			"default": {
-				"a": "a",
-				"b": 1,
-				"c": true
-			},
-			"description": "This is an object",
 			"title": "an_object: Select a type"
+		},
+		"an_unspecified_as_boolean": {
+			"anyOf": [
+				{
+					"additionalProperties": true,
+					"title": "object",
+					"type": "object"
+				},
+				{
+					"title": "array",
+					"type": "array"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				},
+				{
+					"title": "number",
+					"type": "number"
+				},
+				{
+					"title": "boolean",
+					"type": "boolean"
+				},
+				{
+					"title": "null",
+					"type": "null"
+				}
+			],
+			"default": true,
+			"description": "This is an unspecified",
+			"title": "an_unspecified_as_boolean: Select a type"
+		},
+		"an_unspecified_as_list": {
+			"anyOf": [
+				{
+					"additionalProperties": true,
+					"title": "object",
+					"type": "object"
+				},
+				{
+					"title": "array",
+					"type": "array"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				},
+				{
+					"title": "number",
+					"type": "number"
+				},
+				{
+					"title": "boolean",
+					"type": "boolean"
+				},
+				{
+					"title": "null",
+					"type": "null"
+				}
+			],
+			"default": [],
+			"description": "This is an unspecified",
+			"title": "an_unspecified_as_list: Select a type"
+		},
+		"an_unspecified_as_map": {
+			"anyOf": [
+				{
+					"additionalProperties": true,
+					"title": "object",
+					"type": "object"
+				},
+				{
+					"title": "array",
+					"type": "array"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				},
+				{
+					"title": "number",
+					"type": "number"
+				},
+				{
+					"title": "boolean",
+					"type": "boolean"
+				},
+				{
+					"title": "null",
+					"type": "null"
+				}
+			],
+			"default": {},
+			"description": "This is an unspecified",
+			"title": "an_unspecified_as_map: Select a type"
+		},
+		"an_unspecified_as_number": {
+			"anyOf": [
+				{
+					"additionalProperties": true,
+					"title": "object",
+					"type": "object"
+				},
+				{
+					"title": "array",
+					"type": "array"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				},
+				{
+					"title": "number",
+					"type": "number"
+				},
+				{
+					"title": "boolean",
+					"type": "boolean"
+				},
+				{
+					"title": "null",
+					"type": "null"
+				}
+			],
+			"default": 1,
+			"description": "This is an unspecified",
+			"title": "an_unspecified_as_number: Select a type"
+		},
+		"an_unspecified_as_string": {
+			"anyOf": [
+				{
+					"additionalProperties": true,
+					"title": "object",
+					"type": "object"
+				},
+				{
+					"title": "array",
+					"type": "array"
+				},
+				{
+					"title": "string",
+					"type": "string"
+				},
+				{
+					"title": "number",
+					"type": "number"
+				},
+				{
+					"title": "boolean",
+					"type": "boolean"
+				},
+				{
+					"title": "null",
+					"type": "null"
+				}
+			],
+			"default": "default",
+			"description": "This is an unspecified",
+			"title": "an_unspecified_as_string: Select a type"
 		}
 	},
 	"required": [

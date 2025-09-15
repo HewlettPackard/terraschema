@@ -30,5 +30,9 @@
         "other_name": "this is an additional property, terraform will ignore it"
     },
     "a_string_multiple_validation_conditions": "abcd",
+    "a_complex_condition_with_complex_error_message": [
+        "a",
+        "b"
+    ],
     "something_else": "string"
 }

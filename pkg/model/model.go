@@ -17,12 +17,16 @@ type VariableBlock struct {
 	// are written in a certain format.
 	Validations []ValidationBlock `hcl:"validation,block"`
 	Type        hcl.Expression    `hcl:"type,optional"`
+
+	// ignore other attributes (triggers partial decoding)
+	Other hcl.Body `hcl:",remain"`
 }
 
 type ValidationBlock struct {
 	Condition hcl.Expression `hcl:"condition,attr"`
-	// ErrorMessage is ignored.
-	ErrorMessage string `hcl:"error_message,attr"`
+
+	// ignore other attributes (triggers partial decoding)
+	Other hcl.Body `hcl:",remain"`
 }
 
 // TranslatedVariable contains the Variable struct, as well as some extra information that can be used for debugging.

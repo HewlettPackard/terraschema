@@ -16,6 +16,30 @@
 			"string"
 		]
 	},
+	"a_list_of_any": {
+		"default": [
+			"a",
+			"b",
+			"c"
+		],
+		"description": "This is a list of any",
+		"type": [
+			"list",
+			"dynamic"
+		]
+	},
+	"a_map_of_any": {
+		"default": {
+			"a": "a",
+			"b": "b",
+			"c": "c"
+		},
+		"description": "This is a map of any",
+		"type": [
+			"map",
+			"dynamic"
+		]
+	},
 	"a_map_of_strings": {
 		"default": {
 			"a": "a",
@@ -51,6 +75,18 @@
 			"string"
 		]
 	},
+	"a_set_of_any": {
+		"default": [
+			"a",
+			"b",
+			"c"
+		],
+		"description": "This is a set of any",
+		"type": [
+			"set",
+			"dynamic"
+		]
+	},
 	"a_string": {
 		"default": "a string",
 		"description": "This is a string",
@@ -77,6 +113,31 @@
 		"description": "a string",
 		"type": "string"
 	},
+	"an_any_as_boolean": {
+		"default": true,
+		"description": "This is an any",
+		"type": "dynamic"
+	},
+	"an_any_as_list": {
+		"default": [],
+		"description": "This is an any",
+		"type": "dynamic"
+	},
+	"an_any_as_map": {
+		"default": {},
+		"description": "This is an any",
+		"type": "dynamic"
+	},
+	"an_any_as_number": {
+		"default": 1,
+		"description": "This is an any",
+		"type": "dynamic"
+	},
+	"an_any_as_string": {
+		"default": "default",
+		"description": "This is an any",
+		"type": "dynamic"
+	},
 	"an_object": {
 		"default": {
 			"a": "a",
@@ -92,5 +153,30 @@
 				"c": "bool"
 			}
 		]
+	},
+	"an_unspecified_as_boolean": {
+		"default": true,
+		"description": "This is an unspecified",
+		"type": "any"
+	},
+	"an_unspecified_as_list": {
+		"default": [],
+		"description": "This is an unspecified",
+		"type": "any"
+	},
+	"an_unspecified_as_map": {
+		"default": {},
+		"description": "This is an unspecified",
+		"type": "any"
+	},
+	"an_unspecified_as_number": {
+		"default": 1,
+		"description": "This is an unspecified",
+		"type": "any"
+	},
+	"an_unspecified_as_string": {
+		"default": "default",
+		"description": "This is an unspecified",
+		"type": "any"
 	}
 }

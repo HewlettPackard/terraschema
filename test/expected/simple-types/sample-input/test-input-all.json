@@ -30,5 +30,39 @@
         "b": 2,
         "c": false
     },
-    "something_else": "string"
+    "something_else": "string",
+    "an_any_as_map": {},
+    "an_any_as_list": [],
+    "an_any_as_string": "string",
+    "an_any_as_number": 5,
+    "an_any_as_boolean": true,
+    "a_list_of_any": [
+        {},
+        [],
+        "string",
+        5,
+        true,
+        null
+    ],
+    "a_map_of_any": {
+        "map": {},
+        "list": [],
+        "string": "string",
+        "number": 5,
+        "boolean": true,
+        "null": null
+    },
+    "a_set_of_any": [
+        {},
+        [],
+        "string",
+        5,
+        true,
+        null
+    ],
+    "an_unspecified_as_map": {},
+    "an_unspecified_as_list": [],
+    "an_unspecified_as_string": "string",
+    "an_unspecified_as_number": 5,
+    "an_unspecified_as_boolean": true
 }

@@ -12,17 +12,29 @@ var simpleTypeMap = map[string]string{
 	"bool":   "boolean",
 }
 
+var genericTypesList = []string{
+	"any",
+	"dynamic",
+}
+
 func getNodeFromType(name string, typeInterface any, nullable bool, options CreateSchemaOptions) (map[string]any, error) {
+	// manage the generic case (any, dynamic, ...) first (handles nullable by itself)
+	if t, ok := typeInterface.(string); ok && slices.Contains(genericTypesList, t) {
+		return getGenericNode(name, typeInterface, nullable, options)
+	}
+
+	// handle nullable globally for other types
 	if nullable {
 		return getNullableNode(name, typeInterface, options)
 	}
 
+	// get other types as non-nullable
 	switch t := typeInterface.(type) {
 	case string:
 		if simpleType, ok := simpleTypeMap[t]; ok {
 			return map[string]any{"type": simpleType}, nil
 		} else if t == "any" || t == "dynamic" {
-			return map[string]any{"type": "object", "required": []string{}, "additionalProperties": true}, nil
+			return map[string]any{}, nil
 		} else {
 			return nil, fmt.Errorf("unsupported type %q", t)
 		}
@@ -31,6 +43,57 @@ func getNodeFromType(name string, typeInterface any, nullable bool, options Crea
 	default:
 		return nil, fmt.Errorf("unsupported type for %#v", typeInterface)
 	}
+}
+
+func getGenericNode(name string, typeInterface any, nullable bool, options CreateSchemaOptions) (map[string]any, error) {
+	node := make(map[string]any)
+	if typeInterface == nil {
+		return node, nil
+	}
+
+	// check if we are in a subtype case (i.e. list/set of, name is empty in that case)
+	// support null if nullable or subtype
+	isSubtype := len(name) == 0
+	nullSupported := nullable || isSubtype
+
+	// "anyOf" type to compose multiple types (as we want generic to support any type)
+	anyOfNode := []any{
+		map[string]any{
+			"type":                 "object",
+			"title":                "object",
+			"additionalProperties": options.AllowAdditionalProperties,
+		},
+		map[string]any{
+			"type":  "array",
+			"title": "array",
+		},
+		map[string]any{
+			"type":  "string",
+			"title": "string",
+		},
+		map[string]any{
+			"type":  "number",
+			"title": "number",
+		},
+		map[string]any{
+			"type":  "boolean",
+			"title": "boolean",
+		},
+	}
+	if nullSupported {
+		anyOfNode = append(anyOfNode, map[string]any{
+			"type":  "null",
+			"title": "null",
+		})
+	}
+	node["anyOf"] = anyOfNode
+
+	// write title only for plain type, not for subtype
+	if !isSubtype {
+		node["title"] = fmt.Sprintf("%s: Select a type", name)
+	}
+
+	return node, nil
 }
 
 func getNullableNode(name string, typeInterface any, options CreateSchemaOptions) (map[string]any, error) {
@@ -49,7 +112,7 @@ func getNullableNode(name string, typeInterface any, options CreateSchemaOptions
 
 	internalNode["title"] = title
 
-	node["anyOf"] = []any{
+	node["oneOf"] = []any{
 		map[string]any{"type": "null", "title": "null"},
 		internalNode,
 	}

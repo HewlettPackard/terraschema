@@ -196,3 +196,25 @@ variable "a_string_multiple_validation_conditions" {
   }
   default = "hello"
 }
+
+variable "a_complex_condition_with_complex_error_message" {
+  type        = list(string)
+  description = "A list of names that must be 3-24 lowercase letters and numbers."
+  validation {
+    condition = alltrue([
+      for name in var.a_complex_condition_with_complex_error_message :
+      can(regex("^[a-z0-9]{3,24}$", name)) # 3-24 lowercase letters and numbers
+    ])
+    error_message = format(<<-EOT
+        `var.a_complex_condition_with_complex_error_message[*]` value is invalid: %s
+
+        A name must consist of 3-24 lowercase letters and numbers.
+      EOT
+      , try(join(", ", [
+        for idx, name in var.a_complex_condition_with_complex_error_message : format("'%s' [%d]", name, idx)
+        if !can(regex("^[a-z0-9]{3,24}$", name))
+      ]), "<failed to compute>")
+    )
+  }
+  default = []
+}

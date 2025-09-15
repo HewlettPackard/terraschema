@@ -17,7 +17,7 @@ variable "an_object_with_optional" {
 
 variable "a_very_complicated_object" {
     type = object({
-        a = optional(string)
+        a = optional(string, "foo")
         b = tuple([list(string), bool])
         c = map(list(string))
         d = object({
