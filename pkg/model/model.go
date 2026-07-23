@@ -34,6 +34,7 @@ type ValidationBlock struct {
 type AttributeMetadata struct {
 	Description string
 	Examples    []string
+	Deprecated  bool
 }
 
 // TranslatedVariable contains the Variable struct, as well as some extra information that can be used for debugging.

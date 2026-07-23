@@ -282,7 +282,8 @@ Optional declarations of the form `optional(<TYPE>)` are supported.
 Terraform has no `description` argument for attributes inside an `object` type constraint, so TerraSchema reads single-line comments (`#` or `//`) attached to those attributes and emits them as JSON Schema metadata:
 
 - A comment block on the line(s) directly above an attribute, or a trailing comment on the same line, becomes the property's `description`.
-- Within a leading comment block, a line starting with `@example:` ends the description; the remaining text of the block becomes an entry in the property's `examples` array.
+- Within a leading comment block, each line starting with `@example:` begins a new entry in the property's `examples` array. The entry collects the following comment lines (preserving indentation, so multi-line code examples work) until the next annotation.
+- A line starting with `@deprecated` sets `deprecated: true` on the property. Text after `@deprecated:` is appended to the description.
 
 For example:
 
@@ -291,8 +292,11 @@ variable "instance" {
     type = object({
         # The instance size
         # @example: t3.large
+        # @example: t3.xlarge
         size = string
         count = number # How many instances to create
+        # @deprecated: use count instead
+        number_of_instances = optional(number)
     })
 }
 ```
@@ -306,11 +310,16 @@ produces:
         "size": {
             "type": "string",
             "description": "The instance size",
-            "examples": ["t3.large"]
+            "examples": ["t3.large", "t3.xlarge"]
         },
         "count": {
             "type": "number",
             "description": "How many instances to create"
+        },
+        "number_of_instances": {
+            "type": "number",
+            "description": "use count instead",
+            "deprecated": true
         }
     },
     ...

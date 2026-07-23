@@ -13,6 +13,21 @@ variable "an_object_with_optional" {
         e = object({
           a = string
         })
+        # This is F
+        # @deprecated
+        f = optional(string)
+        # This is G
+        # @example: first example
+        # @example: second example
+        g = string
+        # This is H
+        # @example:
+        # {
+        #   name    = "web-server"
+        #   port    = 8080
+        #   enabled = true
+        # }
+        h = string
     })
     description = "This is a nested object with comments"
 }

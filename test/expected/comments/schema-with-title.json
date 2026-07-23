@@ -24,7 +24,9 @@
 				"e": {
 					"additionalProperties": true,
 					"description": "This is E",
-					"examples": ["This is a multi-line\nexample."],
+					"examples": [
+						"This is a multi-line\nexample."
+					],
 					"properties": {
 						"a": {
 							"type": "string"
@@ -34,13 +36,35 @@
 						"a"
 					],
 					"type": "object"
+				},
+				"f": {
+					"deprecated": true,
+					"description": "This is F",
+					"type": "string"
+				},
+				"g": {
+					"description": "This is G",
+					"examples": [
+						"first example",
+						"second example"
+					],
+					"type": "string"
+				},
+				"h": {
+					"description": "This is H",
+					"examples": [
+						"{\n  name    = \"web-server\"\n  port    = 8080\n  enabled = true\n}"
+					],
+					"type": "string"
 				}
 			},
 			"required": [
 				"a",
 				"b",
 				"c",
-				"e"
+				"e",
+				"g",
+				"h"
 			],
 			"type": "object"
 		}

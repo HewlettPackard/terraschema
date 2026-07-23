@@ -10,7 +10,10 @@ import (
 	"github.com/HewlettPackard/terraschema/pkg/model"
 )
 
-const exampleMarker = "@example:"
+const (
+	exampleMarker    = "@example:"
+	deprecatedMarker = "@deprecated"
+)
 
 type trailingComment struct {
 	text      string
@@ -151,14 +154,14 @@ func collectFromObjectCons(
 			path = prefix + "." + name
 		}
 
-		description, examples := parseLeadingBlock(leadingCommentLines(item, obj, fc))
-		if description == "" {
+		meta := parseLeadingBlock(leadingCommentLines(item, obj, fc))
+		if meta.Description == "" {
 			if text, ok := trailingCommentText(item, fc, lastEndOnLine); ok {
-				description = text
+				meta.Description = text
 			}
 		}
-		if description != "" || len(examples) > 0 {
-			out[path] = model.AttributeMetadata{Description: description, Examples: examples}
+		if meta.Description != "" || len(meta.Examples) > 0 || meta.Deprecated {
+			out[path] = meta
 		}
 
 		collectObjectComments(item.ValueExpr, path, fc, out)
@@ -196,25 +199,51 @@ func trailingCommentText(item hclsyntax.ObjectConsItem, fc *fileComments, lastEn
 	return tc.text, true
 }
 
-// parseLeadingBlock splits a leading comment block into a description and an
-// optional single example: lines before the first "@example:" line form the
-// description, and everything from that marker onward forms one example string.
-func parseLeadingBlock(lines []string) (string, []string) {
-	exampleIndex := -1
-	for i, line := range lines {
-		if strings.HasPrefix(line, exampleMarker) {
-			exampleIndex = i
-
-			break
+// parseLeadingBlock interprets a leading comment block as a description with
+// optional annotations. Each "@example:" line starts a new example, which
+// collects the following lines until the next annotation. An "@deprecated"
+// line marks the attribute deprecated; any text after it (and any later plain
+// lines) continues the description.
+func parseLeadingBlock(lines []string) model.AttributeMetadata {
+	var meta model.AttributeMetadata
+	var description []string
+	var examples [][]string
+	// index of the example currently being collected, or -1 for the description.
+	target := -1
+	for _, line := range lines {
+		switch {
+		case strings.HasPrefix(line, exampleMarker):
+			examples = append(examples, annotationText(line, exampleMarker))
+			target = len(examples) - 1
+		case strings.HasPrefix(line, deprecatedMarker):
+			meta.Deprecated = true
+			description = append(description, annotationText(line, deprecatedMarker)...)
+			target = -1
+		case target == -1:
+			description = append(description, line)
+		default:
+			examples[target] = append(examples[target], line)
 		}
 	}
-	if exampleIndex == -1 {
-		return strings.Join(lines, "\n"), nil
+
+	meta.Description = strings.Join(description, "\n")
+	for _, example := range examples {
+		meta.Examples = append(meta.Examples, strings.Join(example, "\n"))
 	}
 
-	description := strings.Join(lines[:exampleIndex], "\n")
-	first := strings.TrimPrefix(strings.TrimPrefix(lines[exampleIndex], exampleMarker), " ")
-	exampleLines := append([]string{first}, lines[exampleIndex+1:]...)
+	return meta
+}
 
-	return description, []string{strings.Join(exampleLines, "\n")}
+// annotationText returns the text of an annotation line after its marker as a
+// slice of zero or one lines, so that markers on a line of their own do not
+// contribute an empty line to the collected block.
+func annotationText(line, marker string) []string {
+	text := strings.TrimPrefix(line, marker)
+	text = strings.TrimPrefix(text, ":")
+	text = strings.TrimPrefix(text, " ")
+	if text == "" {
+		return nil
+	}
+
+	return []string{text}
 }

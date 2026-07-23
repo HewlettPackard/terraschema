@@ -93,6 +93,53 @@ variable "v" {
 				"b": {Examples: []string{"only an example"}},
 			},
 		},
+		"multiple examples": {
+			src: `
+variable "v" {
+	type = object({
+		# This is A
+		# @example: first
+		# @example: second
+		# continues second
+		a = string
+	})
+}`,
+			expected: map[string]model.AttributeMetadata{
+				"a": {Description: "This is A", Examples: []string{"first", "second\ncontinues second"}},
+			},
+		},
+		"code example preserves indentation": {
+			src: `
+variable "v" {
+	type = object({
+		# @example:
+		# {
+		#   name = "web"
+		#   port = 8080
+		# }
+		a = string
+	})
+}`,
+			expected: map[string]model.AttributeMetadata{
+				"a": {Examples: []string{"{\n  name = \"web\"\n  port = 8080\n}"}},
+			},
+		},
+		"deprecated annotation": {
+			src: `
+variable "v" {
+	type = object({
+		# This is A
+		# @deprecated
+		a = string
+		# @deprecated: use A instead
+		b = number
+	})
+}`,
+			expected: map[string]model.AttributeMetadata{
+				"a": {Description: "This is A", Deprecated: true},
+				"b": {Description: "use A instead", Deprecated: true},
+			},
+		},
 		"nested objects in wrapper types": {
 			src: `
 variable "v" {
@@ -143,34 +190,65 @@ variable "v" {
 func TestParseLeadingBlock(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
-		lines               []string
-		expectedDescription string
-		expectedExamples    []string
+		lines    []string
+		expected model.AttributeMetadata
 	}{
 		"no lines": {
 			lines: nil,
 		},
 		"description only": {
-			lines:               []string{"line one", "line two"},
-			expectedDescription: "line one\nline two",
+			lines:    []string{"line one", "line two"},
+			expected: model.AttributeMetadata{Description: "line one\nline two"},
 		},
 		"description and example": {
-			lines:               []string{"a description", "@example: first", "second"},
-			expectedDescription: "a description",
-			expectedExamples:    []string{"first\nsecond"},
+			lines: []string{"a description", "@example: first", "second"},
+			expected: model.AttributeMetadata{
+				Description: "a description",
+				Examples:    []string{"first\nsecond"},
+			},
 		},
 		"example only": {
-			lines:            []string{"@example: just this"},
-			expectedExamples: []string{"just this"},
+			lines:    []string{"@example: just this"},
+			expected: model.AttributeMetadata{Examples: []string{"just this"}},
+		},
+		"multiple examples": {
+			lines: []string{"a description", "@example: first", "@example: second", "more of second"},
+			expected: model.AttributeMetadata{
+				Description: "a description",
+				Examples:    []string{"first", "second\nmore of second"},
+			},
+		},
+		"example on its own lines": {
+			lines: []string{"@example:", "{", "  a = 1", "}"},
+			expected: model.AttributeMetadata{
+				Examples: []string{"{\n  a = 1\n}"},
+			},
+		},
+		"deprecated only": {
+			lines:    []string{"@deprecated"},
+			expected: model.AttributeMetadata{Deprecated: true},
+		},
+		"deprecated with reason": {
+			lines: []string{"a description", "@deprecated: use something else"},
+			expected: model.AttributeMetadata{
+				Description: "a description\nuse something else",
+				Deprecated:  true,
+			},
+		},
+		"description resumes after deprecated": {
+			lines: []string{"@example: an example", "@deprecated", "more description"},
+			expected: model.AttributeMetadata{
+				Description: "more description",
+				Examples:    []string{"an example"},
+				Deprecated:  true,
+			},
 		},
 	}
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			description, examples := parseLeadingBlock(tc.lines)
-			require.Equal(t, tc.expectedDescription, description)
-			require.Equal(t, tc.expectedExamples, examples)
+			require.Equal(t, tc.expected, parseLeadingBlock(tc.lines))
 		})
 	}
 }

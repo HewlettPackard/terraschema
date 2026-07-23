@@ -234,6 +234,9 @@ func applyAttributeComments(node map[string]any, options CreateSchemaOptions) {
 		}
 		node["examples"] = examples
 	}
+	if meta.Deprecated {
+		node["deprecated"] = true
+	}
 }
 
 func getMap(in []any, options CreateSchemaOptions) (map[string]any, error) {
