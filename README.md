@@ -277,6 +277,48 @@ Invalid type specification; Optional attribute modifier expects only one argumen
 
 Optional declarations of the form `optional(<TYPE>)` are supported.
 
+### Attribute Comments
+
+Terraform has no `description` argument for attributes inside an `object` type constraint, so TerraSchema reads single-line comments (`#` or `//`) attached to those attributes and emits them as JSON Schema metadata:
+
+- A comment block on the line(s) directly above an attribute, or a trailing comment on the same line, becomes the property's `description`.
+- Within a leading comment block, a line starting with `@example:` ends the description; the remaining text of the block becomes an entry in the property's `examples` array.
+
+For example:
+
+```hcl
+variable "instance" {
+    type = object({
+        # The instance size
+        # @example: t3.large
+        size = string
+        count = number # How many instances to create
+    })
+}
+```
+
+produces:
+
+```json
+{
+    "type": "object",
+    "properties": {
+        "size": {
+            "type": "string",
+            "description": "The instance size",
+            "examples": ["t3.large"]
+        },
+        "count": {
+            "type": "number",
+            "description": "How many instances to create"
+        }
+    },
+    ...
+}
+```
+
+A blank line between a comment block and an attribute breaks the association, so file headers and other detached comments are ignored, as are `/* */` block comments.
+
 ### Custom Validation Rules
 
 A subset of common validation patterns have been implemented. If a validation rule is present and can't be converted to an existing rule, then the application will print a warning. The current list of valid validation rules for a variable with the name `name` is as follows:

@@ -1,0 +1,61 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"additionalProperties": true,
+	"properties": {
+		"an_object_with_optional": {
+			"description": "This is a nested object with comments",
+			"oneOf": [
+				{
+					"title": "null",
+					"type": "null"
+				},
+				{
+					"additionalProperties": true,
+					"properties": {
+						"a": {
+							"description": "This is A",
+							"type": "string"
+						},
+						"b": {
+							"description": "This is B",
+							"type": "number"
+						},
+						"c": {
+							"type": "boolean"
+						},
+						"d": {
+							"type": "string"
+						},
+						"e": {
+							"additionalProperties": true,
+							"description": "This is E",
+							"examples": ["This is a multi-line\nexample."],
+							"properties": {
+								"a": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"a"
+							],
+							"type": "object"
+						}
+					},
+					"required": [
+						"a",
+						"b",
+						"c",
+						"e"
+					],
+					"title": "object",
+					"type": "object"
+				}
+			],
+			"title": "an_object_with_optional: Select a type"
+		}
+	},
+	"required": [
+		"an_object_with_optional"
+	],
+	"type": "object"
+}

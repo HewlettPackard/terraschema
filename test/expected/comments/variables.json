@@ -1,0 +1,24 @@
+{
+	"an_object_with_optional": {
+		"default": null,
+		"description": "This is a nested object with comments",
+		"type": [
+			"object",
+			{
+				"a": "string",
+				"b": "number",
+				"c": "bool",
+				"d": "string",
+				"e": [
+					"object",
+					{
+						"a": "string"
+					}
+				]
+			},
+			[
+				"d"
+			]
+		]
+	}
+}

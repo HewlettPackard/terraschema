@@ -185,10 +185,12 @@ func getObject(in []any, options CreateSchemaOptions) (map[string]any, error) {
 	properties := make(map[string]any)
 
 	for key, val := range inMap {
-		newNode, err := getNodeFromType("", val, false, options)
+		childOptions := optionsForAttribute(options, key)
+		newNode, err := getNodeFromType("", val, false, childOptions)
 		if err != nil {
 			return nil, fmt.Errorf("object property %q: %w", key, err)
 		}
+		applyAttributeComments(newNode, childOptions)
 		properties[key] = newNode
 		// if the variable of the sub-object is marked as optional but RequireAll is true, then it is required.
 		if !optionals[key] || options.RequireAll {
@@ -202,6 +204,36 @@ func getObject(in []any, options CreateSchemaOptions) (map[string]any, error) {
 	node["required"] = required
 
 	return node, nil
+}
+
+// optionsForAttribute extends the dotted attribute path with the given key, so
+// that nested nodes can look up their comment-derived metadata.
+func optionsForAttribute(options CreateSchemaOptions, key string) CreateSchemaOptions {
+	childOptions := options
+	if options.attributePath == "" {
+		childOptions.attributePath = key
+	} else {
+		childOptions.attributePath = options.attributePath + "." + key
+	}
+
+	return childOptions
+}
+
+func applyAttributeComments(node map[string]any, options CreateSchemaOptions) {
+	meta, ok := options.attributeComments[options.attributePath]
+	if !ok {
+		return
+	}
+	if meta.Description != "" {
+		node["description"] = meta.Description
+	}
+	if len(meta.Examples) > 0 {
+		examples := make([]any, len(meta.Examples))
+		for i, example := range meta.Examples {
+			examples[i] = example
+		}
+		node["examples"] = examples
+	}
 }
 
 func getMap(in []any, options CreateSchemaOptions) (map[string]any, error) {

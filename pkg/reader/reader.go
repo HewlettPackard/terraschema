@@ -62,8 +62,9 @@ func GetVarMap(path string, debugOut bool) (map[string]model.TranslatedVariable,
 		if d.HasErrors() {
 			return nil, d
 		}
+		comments := indexFileComments(file, fileName)
 		for _, block := range blocks.Blocks {
-			name, translated, err := getTranslatedVariableFromBlock(block, file)
+			name, translated, err := getTranslatedVariableFromBlock(block, file, comments)
 			if err != nil {
 				return nil, fmt.Errorf("error getting parsing %q: %w", name, err)
 			}
@@ -82,7 +83,11 @@ func GetVarMap(path string, debugOut bool) (map[string]model.TranslatedVariable,
 	return varMap, nil
 }
 
-func getTranslatedVariableFromBlock(block *hcl.Block, file *hcl.File) (string, model.TranslatedVariable, error) {
+func getTranslatedVariableFromBlock(
+	block *hcl.Block,
+	file *hcl.File,
+	comments *fileComments,
+) (string, model.TranslatedVariable, error) {
 	name := block.Labels[0]
 	variable := model.VariableBlock{}
 	d := gohcl.DecodeBody(block.Body, nil, &variable)
@@ -109,6 +114,7 @@ func getTranslatedVariableFromBlock(block *hcl.Block, file *hcl.File) (string, m
 	if variable.Type != nil {
 		typeAsString := printToString(variable.Type, file)
 		out.TypeAsString = &typeAsString
+		out.ObjectComments = extractObjectAttributeComments(variable.Type, comments)
 	}
 
 	// plaintext print all condition expressions into the ConditionsAsString field.

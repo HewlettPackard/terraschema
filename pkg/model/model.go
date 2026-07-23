@@ -29,6 +29,13 @@ type ValidationBlock struct {
 	Other hcl.Body `hcl:",remain"`
 }
 
+// AttributeMetadata holds documentation extracted from comments attached to an
+// attribute inside an object type constraint.
+type AttributeMetadata struct {
+	Description string
+	Examples    []string
+}
+
 // TranslatedVariable contains the Variable struct, as well as some extra information that can be used for debugging.
 // This is done here because it can be difficult to extract this information from pure hcl.Expressions as present in
 // the Variable struct without further context. Required is used internally, and the others are for debugging.
@@ -42,6 +49,10 @@ type TranslatedVariable struct {
 	TypeAsString *string
 	// Required is true if and only if the variable has no default value.
 	Required bool
+	// ObjectComments maps dotted attribute paths within this variable's object type
+	// constraint (e.g. "e", "e.a") to comment-derived metadata. It is kept out of the
+	// type constraint tree so that --export-variables output is unaffected.
+	ObjectComments map[string]AttributeMetadata
 	// The variable block used to generate the other fields in this struct.
 	Variable VariableBlock
 }
