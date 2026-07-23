@@ -279,11 +279,11 @@ Optional declarations of the form `optional(<TYPE>)` are supported.
 
 ### Attribute Comments
 
-Terraform has no `description` argument for attributes inside an `object` type constraint, so TerraSchema reads single-line comments (`#` or `//`) attached to those attributes and emits them as JSON Schema metadata:
+Terraform doesn't have a built-in way to add descriptions or deprecations to the sub-attributes of a complex type, such as an object. To work around this, terraschema uses comments in the Terraform configuration to add descriptions and deprecations to these attributes, as well as examples. It supports comments both above the attribute and trailing comments on the same line.
 
-- A comment block on the line(s) directly above an attribute, or a trailing comment on the same line, becomes the property's `description`.
-- Within a leading comment block, each line starting with `@example:` begins a new entry in the property's `examples` array. The entry collects the following comment lines (preserving indentation, so multi-line code examples work) until the next annotation.
-- A line starting with `@deprecated` sets `deprecated: true` on the property. Text after `@deprecated:` is appended to the description.
+- By default, a comment line starting with `#` or `//` is added to the description of the property.
+- If a comment starts with `@example:`, the text following it is added to the property's `examples` array.
+- If a comment starts with `@deprecated:`, the text following it is added to the property's `description` and the property is marked as deprecated. You can also use `@deprecated` without a message, in which case the property will be marked as deprecated but no message will be added to the description.
 
 For example:
 
