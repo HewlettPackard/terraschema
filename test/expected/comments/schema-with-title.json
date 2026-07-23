@@ -1,0 +1,112 @@
+{
+	"$id": "http://example.com/schema",
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"additionalProperties": true,
+	"properties": {
+		"an_object_with_optional": {
+			"additionalProperties": true,
+			"description": "This is a nested object with comments",
+			"properties": {
+				"a": {
+					"description": "This is A",
+					"type": "string"
+				},
+				"b": {
+					"description": "This is B",
+					"type": "number"
+				},
+				"c": {
+					"type": "boolean"
+				},
+				"d": {
+					"type": "string"
+				},
+				"e": {
+					"additionalProperties": true,
+					"description": "This is E",
+					"examples": [
+						"This is a multi-line\nexample."
+					],
+					"properties": {
+						"a": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"a"
+					],
+					"type": "object"
+				},
+				"f": {
+					"deprecated": true,
+					"description": "This is F",
+					"type": "string"
+				},
+				"g": {
+					"description": "This is G",
+					"examples": [
+						"first example",
+						"second example"
+					],
+					"type": "string"
+				},
+				"h": {
+					"description": "This is H",
+					"examples": [
+						"{\n  name    = \"web-server\"\n  port    = 8080\n  enabled = true\n}"
+					],
+					"type": "string"
+				},
+				"i": {
+					"description": "This is I",
+					"items": [
+						{
+							"additionalProperties": true,
+							"properties": {
+								"name": {
+									"description": "first element name",
+									"type": "string"
+								}
+							},
+							"required": [
+								"name"
+							],
+							"type": "object"
+						},
+						{
+							"additionalProperties": true,
+							"properties": {
+								"name": {
+									"description": "second element name",
+									"type": "string"
+								}
+							},
+							"required": [
+								"name"
+							],
+							"type": "object"
+						}
+					],
+					"maxItems": 2,
+					"minItems": 2,
+					"type": "array"
+				}
+			},
+			"required": [
+				"a",
+				"b",
+				"c",
+				"e",
+				"g",
+				"h",
+				"i"
+			],
+			"type": "object"
+		}
+	},
+	"required": [
+		"an_object_with_optional"
+	],
+	"title": "Example Schema",
+	"type": "object"
+}

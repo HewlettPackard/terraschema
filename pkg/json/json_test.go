@@ -21,6 +21,7 @@ func TestCreateSchema(t *testing.T) {
 		"complex-types",
 		"custom-validation",
 		"ignore-variables",
+		"comments",
 	}
 	for i := range testCases {
 		name := testCases[i]

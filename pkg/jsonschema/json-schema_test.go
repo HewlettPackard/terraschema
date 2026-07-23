@@ -14,8 +14,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateSchema(t *testing.T) {
-	t.Parallel()
+// runGoldenSchemaTest runs CreateSchema with the given options against every test
+// module and compares the result with the module's golden file of the given name.
+func runGoldenSchemaTest(t *testing.T, goldenFile string, options CreateSchemaOptions) {
+	t.Helper()
 	tfPath := "../../test/modules"
 	schemaPath := "../../test/expected"
 	testCases := []string{
@@ -25,21 +27,16 @@ func TestCreateSchema(t *testing.T) {
 		"complex-types",
 		"custom-validation",
 		"ignore-variables",
+		"comments",
 	}
 	for i := range testCases {
 		name := testCases[i]
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			expected, err := os.ReadFile(filepath.Join(schemaPath, name, "schema.json"))
+			expected, err := os.ReadFile(filepath.Join(schemaPath, name, goldenFile))
 			require.NoError(t, err)
 
-			result, err := CreateSchema(filepath.Join(tfPath, name), CreateSchemaOptions{
-				RequireAll:                false,
-				AllowAdditionalProperties: true,
-				AllowEmpty:                true,
-				NullableAll:               false,
-				IgnoreVariables:           []string{"ignored", "also_ignored"},
-			})
+			result, err := CreateSchema(filepath.Join(tfPath, name), options)
 			require.NoError(t, err)
 
 			var expectedMap map[string]any
@@ -53,47 +50,52 @@ func TestCreateSchema(t *testing.T) {
 	}
 }
 
+func TestCreateSchema(t *testing.T) {
+	t.Parallel()
+	runGoldenSchemaTest(t, "schema.json", CreateSchemaOptions{
+		RequireAll:                false,
+		AllowAdditionalProperties: true,
+		AllowEmpty:                true,
+		NullableAll:               false,
+		IgnoreVariables:           []string{"ignored", "also_ignored"},
+	})
+}
+
 func TestCreateSchemaWithRootProperties(t *testing.T) {
 	t.Parallel()
-	tfPath := "../../test/modules"
-	schemaPath := "../../test/expected"
-	testCases := []string{
-		"empty",
-		"simple",
-		"simple-types",
-		"complex-types",
-		"custom-validation",
-		"ignore-variables",
-	}
-	for i := range testCases {
-		name := testCases[i]
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-			expected, err := os.ReadFile(filepath.Join(schemaPath, name, "schema-with-title.json"))
-			require.NoError(t, err)
+	runGoldenSchemaTest(t, "schema-with-title.json", CreateSchemaOptions{
+		RequireAll:                false,
+		AllowAdditionalProperties: true,
+		AllowEmpty:                true,
+		NullableAll:               false,
+		IgnoreVariables:           []string{"ignored", "also_ignored"},
+		RootProperties: map[string]string{
+			"$id":   "http://example.com/schema",
+			"title": "Example Schema",
+		},
+	})
+}
 
-			result, err := CreateSchema(filepath.Join(tfPath, name), CreateSchemaOptions{
-				RequireAll:                false,
-				AllowAdditionalProperties: true,
-				AllowEmpty:                true,
-				NullableAll:               false,
-				IgnoreVariables:           []string{"ignored", "also_ignored"},
-				RootProperties: map[string]string{
-					"$id":   "http://example.com/schema",
-					"title": "Example Schema",
-				},
-			})
-			require.NoError(t, err)
+func TestCreateSchemaNullableAll(t *testing.T) {
+	t.Parallel()
+	runGoldenSchemaTest(t, "schema-nullable-all.json", CreateSchemaOptions{
+		RequireAll:                false,
+		AllowAdditionalProperties: true,
+		AllowEmpty:                true,
+		NullableAll:               true,
+		IgnoreVariables:           []string{"ignored", "also_ignored"},
+	})
+}
 
-			var expectedMap map[string]any
-			err = json.Unmarshal(expected, &expectedMap)
-			require.NoError(t, err)
-
-			if d := cmp.Diff(expectedMap, result); d != "" {
-				t.Errorf("Schema has incorrect value (-want,+got):\n%s", d)
-			}
-		})
-	}
+func TestCreateSchemaDisallowAdditional(t *testing.T) {
+	t.Parallel()
+	runGoldenSchemaTest(t, "schema-disallow-additional.json", CreateSchemaOptions{
+		RequireAll:                false,
+		AllowAdditionalProperties: false,
+		AllowEmpty:                true,
+		NullableAll:               false,
+		IgnoreVariables:           []string{"ignored", "also_ignored"},
+	})
 }
 
 type errorLocation struct {

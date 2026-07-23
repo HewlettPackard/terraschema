@@ -277,6 +277,57 @@ Invalid type specification; Optional attribute modifier expects only one argumen
 
 Optional declarations of the form `optional(<TYPE>)` are supported.
 
+### Attribute Comments
+
+Terraform doesn't have a built-in way to add descriptions or deprecations to the sub-attributes of a complex type, such as an object. To work around this, terraschema uses comments in the Terraform configuration to add descriptions and deprecations to these attributes, as well as examples. It supports comments both above the attribute and trailing comments on the same line.
+
+- By default, a comment line starting with `#` or `//` is added to the description of the property.
+- If a comment starts with `@example:`, the text following it is added to the property's `examples` array.
+- If a comment starts with `@deprecated:`, the text following it is added to the property's `description` and the property is marked as deprecated. You can also use `@deprecated` without a message, in which case the property will be marked as deprecated but no message will be added to the description.
+
+For example:
+
+```hcl
+variable "instance" {
+    type = object({
+        # The instance size
+        # @example: t3.large
+        # @example: t3.xlarge
+        size = string
+        count = number # How many instances to create
+        # @deprecated: use count instead
+        number_of_instances = optional(number)
+    })
+}
+```
+
+produces:
+
+```json
+{
+    "type": "object",
+    "properties": {
+        "size": {
+            "type": "string",
+            "description": "The instance size",
+            "examples": ["t3.large", "t3.xlarge"]
+        },
+        "count": {
+            "type": "number",
+            "description": "How many instances to create"
+        },
+        "number_of_instances": {
+            "type": "number",
+            "description": "use count instead",
+            "deprecated": true
+        }
+    },
+    ...
+}
+```
+
+A blank line between a comment block and an attribute breaks the association, so file headers and other detached comments are ignored, as are `/* */` block comments.
+
 ### Custom Validation Rules
 
 A subset of common validation patterns have been implemented. If a validation rule is present and can't be converted to an existing rule, then the application will print a warning. The current list of valid validation rules for a variable with the name `name` is as follows:

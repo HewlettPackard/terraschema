@@ -19,6 +19,12 @@ type CreateSchemaOptions struct {
 	NullableAll               bool
 	IgnoreVariables           []string
 	RootProperties            map[string]string
+
+	// comment-derived metadata for the variable currently being processed, keyed by
+	// dotted attribute path, and the path of the node under construction. Options are
+	// passed by value, so mutations stay scoped to each recursion branch.
+	attributeComments map[string]model.AttributeMetadata
+	attributePath     string
 }
 
 func CreateSchema(path string, options CreateSchemaOptions) (map[string]any, error) {
@@ -80,6 +86,9 @@ func createNode(name string, v model.TranslatedVariable, options CreateSchemaOpt
 	if err != nil {
 		return nil, fmt.Errorf("getting type constraint for %q: %w", name, err)
 	}
+
+	options.attributeComments = v.ObjectComments
+	options.attributePath = ""
 
 	// The default value for nullable is the value of NullableAll. For the purpose of keeping the JSON Schema relatively
 	// clean, this is normally set to false. Setting the default value to true is consistent with Terraform behavior.
