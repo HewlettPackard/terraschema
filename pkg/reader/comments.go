@@ -2,6 +2,8 @@
 package reader
 
 import (
+	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/hashicorp/hcl/v2"
@@ -89,110 +91,141 @@ func stripCommentMarker(raw string) string {
 
 // extractObjectAttributeComments finds comments attached to attributes inside
 // object(...) type constraints within expr, keyed by dotted attribute path
-// (e.g. "e", "e.a"). It returns nil if nothing attaches.
+// (e.g. "e", "e.a"; tuple elements add their index, e.g. "t.0.name"). It
+// returns nil if nothing attaches.
 func extractObjectAttributeComments(expr hcl.Expression, fc *fileComments) map[string]model.AttributeMetadata {
 	syntaxExpr, ok := expr.(hclsyntax.Expression)
 	if !ok || fc == nil {
 		return nil
 	}
 
-	out := make(map[string]model.AttributeMetadata)
-	collectObjectComments(syntaxExpr, "", fc, out)
-	if len(out) == 0 {
+	w := &commentWalker{
+		fc:         fc,
+		lineMaxEnd: make(map[int]int),
+		out:        make(map[string]model.AttributeMetadata),
+	}
+	w.recordLineEnds(syntaxExpr)
+	w.collect(syntaxExpr, "")
+	if len(w.out) == 0 {
 		return nil
 	}
 
-	return out
+	return w.out
 }
 
-func collectObjectComments(expr hclsyntax.Expression, prefix string, fc *fileComments, out map[string]model.AttributeMetadata) {
+// commentWalker carries the state of one walk over a type expression.
+type commentWalker struct {
+	fc *fileComments
+	// lineMaxEnd holds, per line, the greatest end byte of any expression that
+	// ends on that line. A trailing comment attaches to an attribute only if the
+	// attribute's value is the last expression ending before it, so a comment
+	// after the closing brackets of a nested construct never attaches to the
+	// attributes inside it.
+	lineMaxEnd map[int]int
+	out        map[string]model.AttributeMetadata
+}
+
+func (w *commentWalker) recordLineEnds(expr hclsyntax.Expression) {
+	endPos := expr.Range().End
+	if endPos.Byte > w.lineMaxEnd[endPos.Line] {
+		w.lineMaxEnd[endPos.Line] = endPos.Byte
+	}
+	switch e := expr.(type) {
+	case *hclsyntax.FunctionCallExpr:
+		for _, arg := range e.Args {
+			w.recordLineEnds(arg)
+		}
+	case *hclsyntax.TupleConsExpr:
+		for _, element := range e.Exprs {
+			w.recordLineEnds(element)
+		}
+	case *hclsyntax.ObjectConsExpr:
+		for _, item := range e.Items {
+			w.recordLineEnds(item.ValueExpr)
+		}
+	}
+}
+
+func (w *commentWalker) collect(expr hclsyntax.Expression, prefix string) {
 	switch e := expr.(type) {
 	case *hclsyntax.FunctionCallExpr:
 		if e.Name == "object" && len(e.Args) == 1 {
 			if objExpr, ok := e.Args[0].(*hclsyntax.ObjectConsExpr); ok {
-				collectFromObjectCons(objExpr, prefix, fc, out)
+				w.collectObject(objExpr, prefix)
 
 				return
 			}
 		}
-		// wrapper types (optional, list, set, map, tuple) add no path segment,
+		// wrapper types (optional, list, set, map) add no path segment,
 		// mirroring the JSON schema recursion.
 		for _, arg := range e.Args {
-			collectObjectComments(arg, prefix, fc, out)
+			w.collect(arg, prefix)
 		}
 	case *hclsyntax.TupleConsExpr:
-		for _, item := range e.Exprs {
-			collectObjectComments(item, prefix, fc, out)
+		// tuple elements are addressed by index, as in the JSON schema recursion,
+		// so same-named attributes in different elements do not collide.
+		for i, element := range e.Exprs {
+			w.collect(element, joinPath(prefix, strconv.Itoa(i)))
 		}
 	}
 }
 
-func collectFromObjectCons(
-	obj *hclsyntax.ObjectConsExpr,
-	prefix string,
-	fc *fileComments,
-	out map[string]model.AttributeMetadata,
-) {
-	// a trailing comment on a line where several attributes end belongs to the last one.
-	lastEndOnLine := make(map[int]int)
-	for _, item := range obj.Items {
-		endRange := item.ValueExpr.Range()
-		if endRange.End.Byte > lastEndOnLine[endRange.End.Line] {
-			lastEndOnLine[endRange.End.Line] = endRange.End.Byte
-		}
-	}
-
+func (w *commentWalker) collectObject(obj *hclsyntax.ObjectConsExpr, prefix string) {
 	for _, item := range obj.Items {
 		traversal, d := hcl.AbsTraversalForExpr(item.KeyExpr)
 		if d.HasErrors() || len(traversal) == 0 {
 			continue
 		}
-		name := traversal.RootName()
+		path := joinPath(prefix, traversal.RootName())
 
-		path := name
-		if prefix != "" {
-			path = prefix + "." + name
-		}
-
-		meta := parseLeadingBlock(leadingCommentLines(item, obj, fc))
+		meta := parseLeadingBlock(w.leadingCommentLines(item, obj))
 		if meta.Description == "" {
-			if text, ok := trailingCommentText(item, fc, lastEndOnLine); ok {
+			if text, ok := w.trailingCommentText(item); ok {
 				meta.Description = text
 			}
 		}
 		if meta.Description != "" || len(meta.Examples) > 0 || meta.Deprecated {
-			out[path] = meta
+			w.out[path] = meta
 		}
 
-		collectObjectComments(item.ValueExpr, path, fc, out)
+		w.collect(item.ValueExpr, path)
 	}
+}
+
+func joinPath(prefix, segment string) string {
+	if prefix == "" {
+		return segment
+	}
+
+	return prefix + "." + segment
 }
 
 // leadingCommentLines collects the contiguous block of standalone comment lines
 // directly above the attribute, in source order. The walk stops at the opening
 // line of the enclosing object so that comments above the whole type expression
 // (e.g. file headers) never attach to the first attribute.
-func leadingCommentLines(item hclsyntax.ObjectConsItem, obj *hclsyntax.ObjectConsExpr, fc *fileComments) []string {
+func (w *commentWalker) leadingCommentLines(item hclsyntax.ObjectConsItem, obj *hclsyntax.ObjectConsExpr) []string {
 	var lines []string
 	keyLine := item.KeyExpr.Range().Start.Line
 	for line := keyLine - 1; line > obj.SrcRange.Start.Line; line-- {
-		text, ok := fc.standalone[line]
+		text, ok := w.fc.standalone[line]
 		if !ok {
 			break
 		}
-		lines = append([]string{text}, lines...)
+		lines = append(lines, text)
 	}
+	slices.Reverse(lines)
 
 	return lines
 }
 
-func trailingCommentText(item hclsyntax.ObjectConsItem, fc *fileComments, lastEndOnLine map[int]int) (string, bool) {
-	endRange := item.ValueExpr.Range()
-	if endRange.End.Byte != lastEndOnLine[endRange.End.Line] {
+func (w *commentWalker) trailingCommentText(item hclsyntax.ObjectConsItem) (string, bool) {
+	endPos := item.ValueExpr.Range().End
+	if endPos.Byte != w.lineMaxEnd[endPos.Line] {
 		return "", false
 	}
-	tc, ok := fc.trailing[endRange.End.Line]
-	if !ok || tc.startByte < endRange.End.Byte {
+	tc, ok := w.fc.trailing[endPos.Line]
+	if !ok || tc.startByte < endPos.Byte {
 		return "", false
 	}
 
@@ -215,7 +248,7 @@ func parseLeadingBlock(lines []string) model.AttributeMetadata {
 		case strings.HasPrefix(line, exampleMarker):
 			examples = append(examples, annotationText(line, exampleMarker))
 			target = len(examples) - 1
-		case strings.HasPrefix(line, deprecatedMarker):
+		case isDeprecatedLine(line):
 			meta.Deprecated = true
 			description = append(description, annotationText(line, deprecatedMarker)...)
 			target = -1
@@ -232,6 +265,18 @@ func parseLeadingBlock(lines []string) model.AttributeMetadata {
 	}
 
 	return meta
+}
+
+// isDeprecatedLine reports whether the line is an @deprecated annotation. The
+// marker must be the whole word: longer words such as "@deprecated_in_v3" are
+// plain description text.
+func isDeprecatedLine(line string) bool {
+	rest, found := strings.CutPrefix(line, deprecatedMarker)
+	if !found {
+		return false
+	}
+
+	return rest == "" || strings.HasPrefix(rest, ":") || strings.HasPrefix(rest, " ") || strings.HasPrefix(rest, "\t")
 }
 
 // annotationText returns the text of an annotation line after its marker as a

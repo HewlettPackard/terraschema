@@ -28,6 +28,13 @@ variable "an_object_with_optional" {
         #   enabled = true
         # }
         h = string
+        # This is I
+        i = tuple([object({
+            # first element name
+            name = string
+        }), object({
+            name = string # second element name
+        })])
     })
     description = "This is a nested object with comments"
 }

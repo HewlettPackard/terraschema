@@ -158,6 +158,54 @@ variable "v" {
 				"c.d": {Description: "nested in list"},
 			},
 		},
+		"tuple elements have distinct paths": {
+			src: `
+variable "v" {
+	type = object({
+		t = tuple([object({
+			# first
+			name = string
+		}), object({
+			# second
+			name = string
+		})])
+	})
+}`,
+			expected: map[string]model.AttributeMetadata{
+				"t.0.name": {Description: "first"},
+				"t.1.name": {Description: "second"},
+			},
+		},
+		"trailing comment after inline nested object attaches to outer attribute only": {
+			src: `
+variable "v" {
+	type = object({
+		a = object({ x = string }) # about a
+	})
+}`,
+			expected: map[string]model.AttributeMetadata{
+				"a": {Description: "about a"},
+			},
+		},
+		"trailing comment after whole type does not attach": {
+			src: `
+variable "v" {
+	type = object({ a = string }) # about the variable
+}`,
+			expected: nil,
+		},
+		"deprecated marker requires a word boundary": {
+			src: `
+variable "v" {
+	type = object({
+		# @deprecated_in_v3 use b instead
+		a = string
+	})
+}`,
+			expected: map[string]model.AttributeMetadata{
+				"a": {Description: "@deprecated_in_v3 use b instead"},
+			},
+		},
 		"comment above one-line object does not attach": {
 			src: `
 variable "v" {
@@ -233,6 +281,12 @@ func TestParseLeadingBlock(t *testing.T) {
 			expected: model.AttributeMetadata{
 				Description: "a description\nuse something else",
 				Deprecated:  true,
+			},
+		},
+		"deprecated requires word boundary": {
+			lines: []string{"@deprecated_in_v3 use something else"},
+			expected: model.AttributeMetadata{
+				Description: "@deprecated_in_v3 use something else",
 			},
 		},
 		"description resumes after deprecated": {

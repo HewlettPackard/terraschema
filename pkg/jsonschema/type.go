@@ -4,6 +4,7 @@ package jsonschema
 import (
 	"fmt"
 	"slices"
+	"strconv"
 )
 
 var simpleTypeMap = map[string]string{
@@ -304,8 +305,10 @@ func getTuple(in []any, options CreateSchemaOptions) (map[string]any, error) {
 		return nil, fmt.Errorf("tuple's second argument must be an array, %v", in)
 	}
 
-	for _, val := range typeSlice {
-		newNode, err := getNodeFromType("", val, false, options)
+	for i, val := range typeSlice {
+		// tuple elements extend the attribute path with their index, matching the
+		// comment extraction walk in pkg/reader.
+		newNode, err := getNodeFromType("", val, false, optionsForAttribute(options, strconv.Itoa(i)))
 		if err != nil {
 			return nil, fmt.Errorf("tuple: %w", err)
 		}

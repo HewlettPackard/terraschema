@@ -61,6 +61,40 @@
 								"{\n  name    = \"web-server\"\n  port    = 8080\n  enabled = true\n}"
 							],
 							"type": "string"
+						},
+						"i": {
+							"description": "This is I",
+							"items": [
+								{
+									"additionalProperties": true,
+									"properties": {
+										"name": {
+											"description": "first element name",
+											"type": "string"
+										}
+									},
+									"required": [
+										"name"
+									],
+									"type": "object"
+								},
+								{
+									"additionalProperties": true,
+									"properties": {
+										"name": {
+											"description": "second element name",
+											"type": "string"
+										}
+									},
+									"required": [
+										"name"
+									],
+									"type": "object"
+								}
+							],
+							"maxItems": 2,
+							"minItems": 2,
+							"type": "array"
 						}
 					},
 					"required": [
@@ -69,7 +103,8 @@
 						"c",
 						"e",
 						"g",
-						"h"
+						"h",
+						"i"
 					],
 					"title": "object",
 					"type": "object"

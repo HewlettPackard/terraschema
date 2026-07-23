@@ -17,7 +17,24 @@
 				],
 				"f": "string",
 				"g": "string",
-				"h": "string"
+				"h": "string",
+				"i": [
+					"tuple",
+					[
+						[
+							"object",
+							{
+								"name": "string"
+							}
+						],
+						[
+							"object",
+							{
+								"name": "string"
+							}
+						]
+					]
+				]
 			},
 			[
 				"d",
